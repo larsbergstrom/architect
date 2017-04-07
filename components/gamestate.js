@@ -29,10 +29,10 @@ AFRAME.registerComponent('gamestate', {
     // Add primitive to staged primitives.
     registerHandler('primitiveplace', function (newState, data) {
       var entity = data.detail;
-      entity.id = newState.entityId++;
+      entity.setAttribute('id', 'entity' + newState.entityId++);
       entity.classList.add('stagedPrimitive');
       newState.stagedPrimitives.push({
-        id: entity.id,
+        id: entity.getAttribute('id'),
         geometry: entity.getDOMAttribute('geometry'),
         material: entity.getDOMAttribute('material'),
         position: entity.getAttribute('position'),
