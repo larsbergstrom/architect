@@ -10,7 +10,6 @@
     <script id="motionCapture" src="https://unpkg.com/aframe-motion-capture-components@0.1.3/dist/aframe-motion-capture-components.min.js"></script>
     <script id="physics" src="https://unpkg.com/aframe-physics-system@1.3.2/dist/aframe-physics-system.min.js"></script>
     <script id="teleport" src="https://unpkg.com/aframe-teleport-controls@0.2.0/dist/aframe-teleport-controls.min.js"></script>
-    <script src="systems/primitive-scaler.js"></script>
     <script src="components/create-thing-button.js"></script>
     <script src="components/gamestate.js"></script>
     <script src="components/html-exporter.js"></script>
@@ -21,7 +20,7 @@
     <script src="components/primitive-scaler.js"></script>
   </head>
   <body>
-    <a-scene avatar-replayer="src: recordings/scaling.json; spectatorMode: true" html-exporter gamestate>
+    <a-scene avatar-replayer="src: recordings/positioning.json; spectatorMode: true" html-exporter gamestate>
       <a-assets>
         <img id="groundTexture" src="img/floor.jpg">
         <img id="skyTexture" src="img/sky.jpg">
@@ -74,7 +73,8 @@
         primitive-mover
         primitive-placer
         primitive-scaler>
-        <a-entity id="activePrimitive" position="0 0 -0.25"></a-entity>
+        <!-- TODO: Specify palette size and actual size of primitives separately. -->
+        <a-entity id="activePrimitive" position="0 0 -0.25" scale="5 5 5"></a-entity>
       </a-entity>
 
       <!-- Environment. -->

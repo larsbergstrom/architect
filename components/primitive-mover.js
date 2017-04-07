@@ -1,59 +1,64 @@
+/**
+ * Grab.
+ */
 AFRAME.registerComponent('primitive-mover', {
   init: function () {
     var handEl = this.el;
-    this.activePrimitive = null;
-    this.previousHandPosition = null;
+    var sceneEl = this.el.sceneEl;
+    this.activePrimitiveEl = null;
+    this.activePrimitiveObject3D = null;
 
+    // Grab.
     handEl.addEventListener('mousedown', evt => {
+      var activePrimitiveEl;
       var intersectedPrimitive = evt.detail.intersectedEl;
+      var worldToLocal;
+
       if (!intersectedPrimitive) { return; }
+
       if (!intersectedPrimitive.classList.contains('stagedPrimitive')) { return; }
+
       // Set active primitive.
-      this.activePrimitive = intersectedPrimitive;
-      console.log('Moving primitive', intersectedPrimitive);
+      activePrimitiveEl = this.activePrimitiveEl = intersectedPrimitive;
+      activePrimitiveObject3D = activePrimitiveEl.object3D;
+      console.log('Moving primitive', activePrimitiveEl);
+
+      // World to local transform so position and rotation do not change when moved.
+      handEl.object3D.updateMatrixWorld();
+      worldToLocal = new THREE.Matrix4().getInverse(handEl.object3D.matrixWorld);
+      activePrimitiveObject3D.applyMatrix(worldToLocal);
+
+      // Move entity's three.js Object3D into hand.
+      handEl.object3D.add(activePrimitiveObject3D);
     });
 
+    // Ungrab.
     handEl.addEventListener('mouseup', () => {
-      if (!this.activePrimitive) { return; }
-      console.log('No longer moving primitive', this.activePrimitive);
+      var activePrimitiveEl = this.activePrimitiveEl;
+      var position;
+      var rotation;
+
+      if (!activePrimitiveEl) { return; }
+      console.log('No longer moving primitive', this.activePrimitiveEl);
+
+      // Get world transforms.
+      position = activePrimitiveObject3D.getWorldPosition();
+      rotation = activePrimitiveObject3D.getWorldRotation();
+
+      // Move primitive back to scene.
+      sceneEl.object3D.add(activePrimitiveObject3D);
+
+      // Sync world transforms back to entity.
+      activePrimitiveEl.setAttribute('position', position);
+      activePrimitiveEl.setAttribute('rotation', {
+        x: THREE.Math.radToDeg(rotation.x),
+        y: THREE.Math.radToDeg(rotation.y),
+        z: THREE.Math.radToDeg(rotation.z)
+      });
+
       // Reset.
-      this.activePrimitive = null;
-      this.previousHandPosition = null;
+      this.activePrimitiveEl = null;
+      this.activePrimitiveObject3D = null;
     });
-  },
-
-  tick: function () {
-    var activePrimitive = this.activePrimitive;
-    var handEl = this.el;  // Hand.
-    var currentHandPosition;
-
-    if (!activePrimitive) { return; }
-
-    // Update transforms.
-    handEl.sceneEl.object3D.updateMatrixWorld();
-    handEl.parentEl.object3D.updateMatrixWorld();
-    activePrimitive.object3D.updateMatrixWorld(true);
-
-    currentHandPosition = handEl.object3D.getWorldPosition();
-    previousHandPosition = this.previousHandPosition || currentHandPosition;
-
-    // Calculate delta.
-    deltaPosition = {
-      x: currentHandPosition.x - previousHandPosition.x,
-      y: currentHandPosition.y - previousHandPosition.y,
-      z: currentHandPosition.z - previousHandPosition.z
-    },
-
-    // Update primitive position.
-    primitivePosition = activePrimitive.object3D.getWorldPosition();
-    activePrimitive.setAttribute('position', {
-      x: primitivePosition.x + deltaPosition.x,
-      y: primitivePosition.y + deltaPosition.y,
-      z: primitivePosition.z + deltaPosition.z
-    });
-
-    this.previousHandPosition = currentHandPosition;
-
-    // TODO: Consider using physics constraint for rotation.
   }
 });
