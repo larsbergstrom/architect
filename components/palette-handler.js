@@ -11,13 +11,13 @@ AFRAME.registerComponent('palette-handler', {
      });
 
     // Select primitive from palette with mousedown.
-    el.addEventListener('mousedown', function (evt) {
+    el.addEventListener('mousedown', evt => {
       var targetEl = evt.detail.intersectedEl;
 
       if (!targetEl) { return; }
 
       // Select primitive.
-      if (targetEl.classList.contains('primitive')) {
+      if (targetEl.classList.contains('palettePrimitive')) {
         var geometry = targetEl.getDOMAttribute('geometry');
         // Set.
         activePrimitiveEl.setAttribute('geometry', geometry);
@@ -40,13 +40,13 @@ AFRAME.registerComponent('palette-handler', {
     });
 
     // Release primitive, pass off to entity-placer.
-    el.addEventListener('triggerup', function (evt) {
+    el.addEventListener('triggerup', evt => {
       if (!this.hasSelectedPrimitive) { return; }
       el.emit('primitivedragrelease');
     });
 
     // Reset activePrimitiveEl once primitive is placed.
-    el.parentNode.addEventListener('primitiveplace', function (evt) {
+    el.parentNode.addEventListener('primitiveplace', evt => {
       this.hasSelectedPrimitive = false;
       activePrimitiveEl.removeAttribute('geometry');
       activePrimitiveEl.removeAttribute('material');
