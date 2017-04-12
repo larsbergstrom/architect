@@ -1,6 +1,10 @@
 AFRAME.registerComponent('axis-helper', {
-  init: function () {
-    this.el.setObject3D('axishelper', new THREE.AxisHelper(0.02));
+  schema: {
+    size: {type: 'number', default: 0.02}
+  },
+
+  update: function () {
+    this.el.setObject3D('axishelper', new THREE.AxisHelper(this.data.size));
   },
 
   remove: function () {
