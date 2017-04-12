@@ -1,14 +1,73 @@
+var AXES = [
+  {name: 'z', direction: new THREE.Vector3(0, 0, 1)},
+  {name: 'y', direction: new THREE.Vector3(0, 1, 0)},
+  {name: 'x', direction: new THREE.Vector3(1, 0, 0)}
+];
+
+var transformedBasisVector = new THREE.Vector3();
+
+/**
+ * System taking into account both hands.
+ */
 AFRAME.registerSystem('primitive-scaler', {
   schema: {
+    axisThreshold: {default: 0.8},
     factor: {default: 0.1}
   },
 
   init: function () {
     this.activeEntity = null;
     this.activeHands = 0;
-    this.currentHandsVector = new THREE.Vector3();
+    this.handsVector = new THREE.Vector3();
     this.hands = [];
-    this.previousHandsVector = new THREE.Vector3();
+  },
+
+  tick: function () {
+    var activeEntity = this.activeEntity;
+    var axis;
+    var handsVector = this.handsVector;
+    var data = this.data;
+    var distanceChange;
+    var hands = this.hands;
+    var handsDistance;
+    var sceneEl = this.sceneEl;
+    var stagedPrimitives;
+
+    // Start scaling when both hands are active. Else, reset.
+    if (this.activeHands < 2) {
+      this.activeEntity = null;
+      this.originalEntityScale = null;
+      this.originalHandsDistance = 0;
+      return;
+    }
+
+    handsDistance = hands[0].object3D.position.distanceTo(hands[1].object3D.position);
+
+    // Grab last-placed primitive for now. Set up scaling.
+    if (!activeEntity) {
+      // TODO: Decouple from game state. Allow selecting primitive to scale.
+      stagedPrimitives = sceneEl.getAttribute('gamestate').stagedPrimitives;
+      if (!stagedPrimitives.length) { return; }
+      activeEntity = document.querySelector(
+        '#' + stagedPrimitives[stagedPrimitives.length - 1].id);
+
+      this.activeEntity = activeEntity;
+      // Store original scale of entity and original distance between controllers.
+      this.originalEntityScale = activeEntity.getAttribute('scale');
+      this.originalHandsDistance = handsDistance;
+    }
+
+    // Calculate vector between both hands.
+    handsVector.copy(hands[1].object3D.position).sub(hands[0].object3D.position);
+
+    // Get closest axis to determine which direction to scale.
+    axis = getClosestAxis(handsVector.normalize(), activeEntity.object3D.quaternion);
+
+    // Set scale.
+    distanceChange = handsDistance - this.originalHandsDistance;
+    activeEntity.setAttribute('scale', {
+      [axis]: this.originalEntityScale[axis] + distanceChange * 10
+    })
   },
 
   registerHand: function (hand) {
@@ -25,51 +84,12 @@ AFRAME.registerSystem('primitive-scaler', {
 
   setHandInactive: function () {
     this.activeHands--;
-  },
-
-  tick: function () {
-    var activeEntity = this.activeEntity;
-    var hands = this.hands;
-    var currentHandsVector = this.currentHandsVector;
-    var scale;
-    var scaleAxis;
-    var sceneEl = this.sceneEl;
-    var stagedPrimitives;
-    var worldToLocal;
-
-    // Start scaling when both hands are active.
-    if (this.activeHands < 2) { return; }
-
-    // Grab last-placed primitive for now.
-    // TODO: Allow user to select primitive or entity to scale.
-    if (!activeEntity) {
-      stagedPrimitives = sceneEl.getAttribute('gamestate').stagedPrimitives;
-      activeEntity = document.querySelector(
-        '#' + stagedPrimitives[stagedPrimitives.length - 1].id);
-      this.activeEntity = activeEntity;
-    }
-
-    // Calculate the vector between both hands.
-    currentHandsVector.copy(hands[0].object3D.position).sub(hands[1].object3D.position);
-
-    // Transform vector into local camera space.
-    sceneEl.camera.updateMatrixWorld();
-    worldToLocal = new THREE.Matrix4().getInverse(sceneEl.camera.matrixWorld);
-    currentHandsVector.applyMatrix4(worldToLocal);
-
-    // Determine which axis to scale.
-    scaleAxis = getClosestAxis(currentHandsVector);
-    console.log(scaleAxis);
-
-    // Determine magnitude of scale.
-    scale = activeEntity.getAttribute('scale');
-    scale[scaleAxis] = scale[scaleAxis] + (currentHandsVector.length() * this.data.factor);
-    activeEntity.setAttribute('scale', scale);
-
-    this.previousHandsVector.copy(currentHandsVector);
   }
 });
 
+/**
+ * For individual hand.
+ */
 AFRAME.registerComponent('primitive-scaler', {
   init: function () {
     var el = this.el;
@@ -92,11 +112,29 @@ AFRAME.registerComponent('primitive-scaler', {
 });
 
 /**
- * Calculate closest aligned axis by getting the largest factor.
+ * Calculate closest aligned axis using dot product and threshold.
+ *
+ * @param {object} vector - THREE.Vector3.
+ * @param {object} objectTransform - THREE.Quaternion.
  */
-function getClosestAxis (vector) {
-  var closestAxis = 'x';
-  if (Math.abs(vector.y) > Math.abs(vector.x)) { closestAxis = 'y'; }
-  if (Math.abs(vector.z) > Math.abs(vector.y)) { closestAxis = 'x'; }
-  return closestAxis;
+function getClosestAxis (vector, objectTransform) {
+  var axis;
+  var axisSimilarity;
+  var axisSimilarityThreshold = 0.8;
+  var i;
+
+  for (i = 0; i < AXES.length; i++) {
+    axis = AXES[i];
+
+    // Transform basis vector to object space.
+    transformedBasisVector.copy(axis.direction).applyQuaternion(objectTransform);
+
+    // Calculate similarity with dot product.
+    axisSimilarity = vector.dot(transformedBasisVector);
+
+    // Return axis if it meets the threshold.
+    if (axisSimilarity > axisSimilarityThreshold || axisSimilarity < -1 * axisSimilarityThreshold) {
+      return axis.name;
+    }
+  }
 }

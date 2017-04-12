@@ -36,6 +36,7 @@ AFRAME.registerComponent('primitive-placer', {
         z: THREE.Math.radToDeg(rotation.z)
       });
       newEntity.setAttribute('scale', {x: 5, y: 5, z: 5});
+      newEntity.setAttribute('axis-helper', '');
 
       // Emit.
       newEntity.addEventListener('loaded', function () {
