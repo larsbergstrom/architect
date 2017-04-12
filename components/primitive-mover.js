@@ -20,7 +20,6 @@ AFRAME.registerComponent('primitive-mover', {
       // Set active primitive.
       activePrimitiveEl = this.activePrimitiveEl = intersectedPrimitive;
       activePrimitiveObject3D = activePrimitiveEl.object3D;
-      console.log('Grabbed', activePrimitiveEl);
 
       // World to local transform so position and rotation do not change when moved.
       handEl.object3D.updateMatrixWorld();
@@ -38,7 +37,6 @@ AFRAME.registerComponent('primitive-mover', {
       var rotation;
 
       if (!activePrimitiveEl) { return; }
-      console.log('Ungrabbed', this.activePrimitiveEl);
 
       // Get world transforms.
       position = activePrimitiveObject3D.getWorldPosition();

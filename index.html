@@ -15,18 +15,21 @@
     <script src="components/gamestate.js"></script>
     <script src="components/html-exporter.js"></script>
     <script src="components/palette-handler.js"></script>
+    <script src="components/primitive-cloner.js"></script>
     <script src="components/primitive-deleter.js"></script>
     <script src="components/primitive-mover.js"></script>
     <script src="components/primitive-placer.js"></script>
     <script src="components/primitive-scaler.js"></script>
   </head>
   <body>
-    <a-scene avatar-replayer="src: recordings/scaling.json; spectatorMode: true" html-exporter gamestate>
+    <a-scene avatar-replayer="src: recordings/cloning.json; spectatorMode: true" html-exporter gamestate>
       <a-assets>
         <img id="groundTexture" src="img/floor.jpg">
         <img id="skyTexture" src="img/sky.jpg">
-        <a-mixin id="primitive" material="color: #888" event-set__mouseenter="_event: mouseenter; material.color: #555; material.opacity: 0.75" event-set__mouseleave="_event: mouseleave; material.color: #888; material.opacity: 1"></a-mixin>
+        <a-mixin id="palettePrimitive" material="color: #888" event-set__mouseenter="_event: mouseenter; material.color: #555; material.opacity: 0.75" event-set__mouseleave="_event: mouseleave; material.color: #888; material.opacity: 1"></a-mixin>
         <a-mixin id="color" geometry="primitive: box; depth: 0.001; height: 0.01; width: 0.01" event-set__mouseenter="_event: mouseenter; material.opacity: 0.75" event-set__mouseleave="_event: mouseleave; material.opacity: 1"></a-mixin>
+        <!-- Primitive mixin in case you want to add debug components (e.g., axis-helper). -->
+        <a-mixin id="primitive"></a-mixin>
         <audio id="deleteSound" src="audio/delete.mp3"></audio>
         <audio id="dingSound" src="audio/ding.mp3"></audio>
       </a-assets>
@@ -35,7 +38,10 @@
       <a-entity id="leftHand"
         hand-controls="left"
         shadow="cast: true"
+        controller-cursor
+        raycaster="far: 0.2"
         teleport-controls="type: parabolic; collisionEntities: #ground"
+        primitive-cloner
         primitive-scaler>
         <!-- Palette. -->
         <a-entity scale="3 3 3">
@@ -45,10 +51,10 @@
 
             <!-- Primitives. -->
             <a-entity id="palettePrimitives" layout="type: line; margin: 0.03" position="-0.05 0 0.015">
-              <a-entity class="palettePrimitive" mixin="primitive" geometry="primitive: box; depth: 0.01; height: 0.01; width: 0.01"></a-entity>
-              <a-entity class="palettePrimitive" mixin="primitive" geometry="primitive: sphere; radius: 0.01"></a-entity>
-              <a-entity class="palettePrimitive" mixin="primitive" geometry="primitive: cylinder; height: 0.01; radius: 0.01"></a-entity>
-              <a-entity class="palettePrimitive" mixin="primitive" geometry="primitive: torus; radius: 0.01; radiusTubular: 0.001"></a-entity>
+              <a-entity class="palettePrimitive" mixin="palettePrimitive" geometry="primitive: box; depth: 0.01; height: 0.01; width: 0.01"></a-entity>
+              <a-entity class="palettePrimitive" mixin="palettePrimitive" geometry="primitive: sphere; radius: 0.01"></a-entity>
+              <a-entity class="palettePrimitive" mixin="palettePrimitive" geometry="primitive: cylinder; height: 0.01; radius: 0.01"></a-entity>
+              <a-entity class="palettePrimitive" mixin="palettePrimitive" geometry="primitive: torus; radius: 0.01; radiusTubular: 0.001"></a-entity>
             </a-entity>
 
             <!-- Colors. -->
@@ -70,6 +76,7 @@
         controller-cursor
         raycaster="far: 0.2"
         palette-handler
+        primitive-cloner
         primitive-deleter
         primitive-mover
         primitive-placer

@@ -15,7 +15,6 @@ AFRAME.registerSystem('primitive-scaler', {
     this.activeEntity = null;
     this.activeHands = 0;
     this.axis = '';
-    this.currentScalingAxis = 0;
     this.handsVector = new THREE.Vector3();
     this.hands = [];
   },

@@ -11,13 +11,9 @@ AFRAME.registerComponent('primitive-placer', {
       activePrimitive = el.sceneEl.getAttribute('gamestate').activePrimitive;
     });
 
-    var workaround = 0;
     el.addEventListener('primitivedragrelease', function (evt) {
       var newEntity;
       var rotation;
-
-      workaround++;
-      if (workaround % 2 !== 0) { return; }
 
       // Update matrix worlds.
       el.sceneEl.object3D.updateMatrixWorld();
@@ -36,13 +32,12 @@ AFRAME.registerComponent('primitive-placer', {
         z: THREE.Math.radToDeg(rotation.z)
       });
       newEntity.setAttribute('scale', {x: 5, y: 5, z: 5});
-      newEntity.setAttribute('axis-helper', '');
+      newEntity.setAttribute('mixin', 'primitive');
 
       // Emit.
       newEntity.addEventListener('loaded', function () {
         el.sceneEl.emit('primitiveplace', newEntity);
         dingSound.play();
-        console.log('Primitive placed', newEntity);
       });
 
       // Add primitive.
