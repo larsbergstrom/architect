@@ -15,6 +15,7 @@
   ],
   "devDependencies": {
     "cross-env": "^4.0.0",
+    "uglify-js": "git://github.com/mishoo/UglifyJS2#harmony",
     "webpack": "^2.3.3",
     "webpack-dev-server": "^2.4.2"
   },
