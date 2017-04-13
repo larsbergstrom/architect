@@ -1,155 +1,111 @@
 /* global AFRAME */
+var Redux = require('redux');
+
+var REDUCERS = {};
+
 AFRAME.registerComponent('gamestate', {
   schema: {
-    // Initial state.
-    activePrimitive: {
-      default: {
-        material: {color: 'red'}
-      },
-      parse: function (val) {
-        return val;
-      }
+    parse: function (val) {
+      if (typeof val === 'string') { val = JSON.parse; }
+      return val;
     },
-    entityId: {default: 0},
-    entities: {type: 'array', default: []},
-    stagedPrimitives: {type: 'array', default: []}
+    stringify: function (val) {
+      return JSON.stringify(val);
+    }
   },
 
   init: function () {
-    var self = this;
+    var combinedReducers;
     var el = this.el;
-    var initialState = this.initialState;
-    var state = this.data;
+    var reducers = [];
+    var self = this;
+    var store;
 
-    // Initial state.
-    if (!initialState) { initialState = state; }
-
-    el.emit('gamestateinitialized', {state: initialState});
-
-    // Add primitive to staged primitives.
-    registerHandler('primitiveplace', function (newState, data) {
-      var entity = data.detail;
-      entity.setAttribute('id', 'entity' + newState.entityId++);
-      entity.classList.add('stagedPrimitive');
-      newState.stagedPrimitives.push({
-        id: entity.getAttribute('id'),
-        geometry: entity.getDOMAttribute('geometry'),
-        material: entity.getDOMAttribute('material'),
-        position: entity.getAttribute('position'),
-        rotation: entity.getAttribute('rotation'),
-        scale: entity.getAttribute('scale')
-      });
-      return newState;
+    // Instantiate registered reducers.
+    Object.keys(REDUCERS).forEach(function (reducerName) {
+      reducers.push(new REDUCERS[reducerName].Reducer())
     });
 
-    // Update active primitive geometry.
-    registerHandler('paletteprimitiveselect', function (newState, data) {
-      data = data.detail;
-      newState.activePrimitive.geometry = data.geometry;
-      newState.activePrimitive.scale = data.scale;
-      return newState;
-    });
+    // Compose reducers and create store.
+    combinedReducers = Redux.compose.apply(this,
+      reducers.map(reducer => reducer.reducer)
+    );
+    store = this.store = Redux.createStore(
+      combinedReducers,
+      window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+    );
 
-    // Update active primitive material.
-    registerHandler('palettecolorselect', function (newState, data) {
-      data = data.detail;
-      newState.activePrimitive.material = {color: data.color};
-      return newState;
-    });
+    // Sync initial state to component.
+    this.data = store.getState();
 
-    // Update active primitive material.
-    registerHandler('createthingbuttonpress', function (newState, data) {
-      // Move staged primitives to entities.
-      newState.entities.push(newState.stagedPrimitives.slice());
+    // Notify.
+    el.emit('gamestateinitialized', {state: this.data});
 
-      // Reset staged primitives.
-      newState.stagedPrimitives.length = 0;
-      return newState;
-    });
-
-    // Delete primitive.
-    registerHandler('primitivedelete', function (newState, data) {
-      var deletedEntityId = data.detail.id;
-      var i;
-      var stagedPrimitive;
-
-      // Clone array for clean state.
-      newState.stagedPrimitives = newState.stagedPrimitives.slice();
-
-      // Remove from stagedPrimitives array.
-      for (i = 0; i < newState.stagedPrimitives.length; i++) {
-        stagedPrimitive = newState.stagedPrimitives[i];
-        if (stagedPrimitive.id === deletedEntityId) {
-          newState.stagedPrimitives.splice(i, 1);
-          break;
-        }
-      }
-
-      // TODO: If not in stagedPrimitives, but in entities, then delete the group.
-      return newState;
-    });
-
-    /**
-     * TODO: Synchronous option for triggering a handler.
-     * Pass entire event detail into handler.
-     */
-    function registerHandler (event, handler) {
-      el.addEventListener(event, function (param) {
-        var newState = handler(AFRAME.utils.extend({}, state), param);
-        publishState(event, newState);
-      });
-    }
-
-    function publishState (event, newState) {
-      var oldState = AFRAME.utils.extend({}, state);
-      el.setAttribute('gamestate', newState);
-      state = newState;
+    // Set up subscriber to emit changes to A-Frame.
+    var previousState = Object.assign({}, this.data);
+    store.subscribe(() => {
+      var newState = store.getState();
+      this.data = newState;
       el.emit('gamestatechanged', {
-        event: event,
-        diff: AFRAME.utils.diff(oldState, newState),
+        action: newState.lastAction,
+        diff: AFRAME.utils.diff(previousState, newState),
         state: newState
       });
-    }
+      previousState = newState;
+    });
   }
 });
 
 /**
- * Bind game state to a component property.
+ * Base reducer prototype.
  */
-AFRAME.registerComponent('gamestatebind', {
-  schema: {
-    default: {},
-    parse: AFRAME.utils.styleParser.parse
-  },
-
-  update: function () {
-    var sceneEl = this.el.closestScene();
-    if (sceneEl.hasLoaded) {
-      this.updateBinders();
-    }
-    sceneEl.addEventListener('loaded', this.updateBinders.bind(this));
-  },
-
-  updateBinders: function () {
-    var data = this.data;
-    var el = this.el;
-    var subscribed = Object.keys(this.data);
-
-    el.sceneEl.addEventListener('gamestatechanged', function (evt) {
-      syncState(evt.detail.diff);
-    });
-
-    el.sceneEl.addEventListener('gamestateinitialized', function (evt) {
-      syncState(evt.detail.state);
-    });
-
-    function syncState (state) {
-      Object.keys(state).forEach(function updateIfNecessary (stateProperty) {
-        var targetProperty = data[stateProperty];
-        var value = state[stateProperty];
-        if (subscribed.indexOf(stateProperty) === -1) { return; }
-        AFRAME.utils.entity.setComponentProperty(el, targetProperty, value);
-      });
-    }
+var Reducer = function () { };
+Reducer.prototype = {
+  actions: {},
+  initialState: {},
+  reducer: function (state, action) {
+    return state || this.initialState;
   }
-});
+};
+
+/**
+ * API for registering reducers.
+ */
+AFRAME.registerReducer = function (name, definition) {
+  var NewReducer;
+  var proto;
+
+  if (REDUCERS[name]) {
+    throw new Error('The reducer `' + name + '` has been already registered. ' +
+                    'Check that you are not loading two versions of the same reducer ' +
+                    'or two different reducers of the same name.');
+  }
+
+  // Format definition object to prototype object.
+  proto = {};
+  Object.keys(definition).forEach(function convertToPrototype (key) {
+    proto[key] = {
+      value: definition[key],
+      writable: true
+    };
+  });
+
+  // Extend base prototype.
+  NewReducer = function () { Reducer.call(this); };
+  NewReducer.prototype = Object.create(Reducer.prototype, proto);
+  NewReducer.prototype.name = name;
+  NewReducer.prototype.constructor = NewReducer;
+
+  // Wrap reducer to bind `this` to prototype. Redux would bind `window`.
+  NewReducer.prototype.reducer = function (state, action) {
+    return definition.reducer.call(NewReducer.prototype, state, action);
+  };
+
+  REDUCERS[name] = {
+    Reducer: NewReducer,
+    actions: NewReducer.prototype.actions,
+    initialState: NewReducer.prototype.initialState,
+    reducer: NewReducer.prototype.reducer
+  };
+  return NewReducer;
+};

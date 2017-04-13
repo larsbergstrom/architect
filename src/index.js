@@ -8,6 +8,7 @@ require('aframe-teleport-controls');
 require('./components/axis-helper');
 require('./components/create-thing-button');
 require('./components/gamestate');
+require('./components/gamestate-actions');
 require('./components/html-exporter');
 require('./components/palette-handler');
 require('./components/primitive-cloner');
@@ -15,3 +16,5 @@ require('./components/primitive-deleter');
 require('./components/primitive-mover');
 require('./components/primitive-placer');
 require('./components/primitive-scaler');
+
+require('./state/app');
