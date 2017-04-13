@@ -28,6 +28,7 @@ AFRAME.registerSystem('primitive-scaler', {
     var distanceChange;
     var hands = this.hands;
     var handsDistance;
+    var scale;
     var stagedPrimitives;
 
     // Scale only if both hands are active.
@@ -38,17 +39,20 @@ AFRAME.registerSystem('primitive-scaler', {
     distanceChange = handsDistance - this.originalHandsDistance;
 
     // Update scale.
-    activeEntity.setAttribute('scale', {
-      [axis]: this.originalEntityScale[axis] + distanceChange * 10
-    })
+    scale = Object.assign({}, this.originalEntityScale);
+    scale[axis] = this.originalEntityScale[axis] + distanceChange * 10;
+    activeEntity.setAttribute('scale', scale);
   },
 
   /**
    * Set hand active. Set up state if both hands are active.
    */
-  setHandActive: function () {
+  setHandActive: function (handEl) {
     var hands = this.hands;  // Hand entities.
     var sceneEl = this.sceneEl;
+
+    // Don't count as scaling if intersecting entity, to not conflict with cloning gesture.
+    if (handEl.components['controller-cursor'].intersectedEl) { return; }
 
     // Update active hands.
     this.activeHands++;
@@ -82,10 +86,15 @@ AFRAME.registerSystem('primitive-scaler', {
   /**
    * Set hand inactive. Reset state if both hands are inactive.
    */
-  setHandInactive: function () {
+  setHandInactive: function (handEl) {
+    if (this.activeHands === 0) { return; }
+
     this.activeHands--;
 
-    if (this.activeHands < 2) { return; }
+    // Scaling finished.
+    if (this.activeEntity && this.axis) {
+      this.el.emit('primitivescale', {el: this.activeEntity});
+    }
 
     // Reset state.
     this.activeEntity = null;
@@ -114,11 +123,11 @@ AFRAME.registerComponent('primitive-scaler', {
     system.registerHand(el);
 
     el.addEventListener('triggerdown', () => {
-      system.setHandActive();
+      system.setHandActive(el);
     });
 
     el.addEventListener('triggerup', () => {
-      system.setHandInactive();
+      system.setHandInactive(el);
     });
   },
 

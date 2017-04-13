@@ -2,12 +2,13 @@ AFRAME.registerComponent('palette-handler', {
   init: function () {
     var el = this.el;
     var activePrimitiveEl = el.querySelector('#activePrimitive');
+    var material;
+
     this.hasSelectedPrimitive = false;
 
-     // Hook up to game state.
-     var activePrimitive;
-     el.sceneEl.addEventListener('gamestateinitialize', function (evt) {
-       activePrimitive = el.sceneEl.getAttribute('gamestate').activePrimitive;
+     // Read selected material from state.
+     el.sceneEl.addEventListener('gamestatechange', function (evt) {
+       material = evt.detail.state.paletteMaterial;
      });
 
     // Select primitive from palette with mousedown.
@@ -21,13 +22,9 @@ AFRAME.registerComponent('palette-handler', {
         var geometry = targetEl.getDOMAttribute('geometry');
         // Set.
         activePrimitiveEl.setAttribute('geometry', geometry);
-        activePrimitiveEl.setAttribute('material', activePrimitive.material);
+        activePrimitiveEl.setAttribute('material', material);
         // Emit.
-        el.emit('paletteprimitiveselect', {
-          geometry: geometry,
-          // TODO: Larger scale.
-          scale: {x: 3, y: 3, z: 3}
-        });
+        el.emit('paletteprimitiveselect', {geometry: geometry});
         this.hasSelectedPrimitive = true;
       }
 

@@ -1,14 +1,24 @@
+/**
+ * Create primitive in scene from held primitive.
+ */
 AFRAME.registerComponent('primitive-placer', {
   init: function () {
+    var activePrimitiveEl;
     var el = this.el;
-    var activePrimitiveEl = el.querySelector('#activePrimitive');
-    var dingSound = document.querySelector('#dingSound');
+    var dingSound;
+    var geometry;
+    var material;
+
+    // Grab slot.
+    activePrimitiveEl = el.querySelector('#activePrimitive');
+
+    dingSound = document.querySelector('#dingSound');
     dingSound.volume = 0.3;
 
-    // Hook up to game state.
-    var activePrimitive;
-    el.sceneEl.addEventListener('gamestateinitialize', function (evt) {
-      activePrimitive = el.sceneEl.getAttribute('gamestate').activePrimitive;
+    // Read geometry and material from game state.
+    el.sceneEl.addEventListener('gamestatechange', function (evt) {
+      geometry = evt.detail.state.paletteGeometry;
+      material = evt.detail.state.paletteMaterial;
     });
 
     el.addEventListener('primitivedragrelease', function (evt) {
@@ -23,8 +33,8 @@ AFRAME.registerComponent('primitive-placer', {
       // Create entity by copying selected primitive.
       rotation = activePrimitiveEl.object3D.getWorldRotation();
       newEntity = document.createElement('a-entity');
-      newEntity.setAttribute('geometry', activePrimitive.geometry, true);
-      newEntity.setAttribute('material', activePrimitive.material, true);
+      newEntity.setAttribute('geometry', geometry, true);
+      newEntity.setAttribute('material', material, true);
       newEntity.setAttribute('position', activePrimitiveEl.object3D.getWorldPosition());
       newEntity.setAttribute('rotation', {
         x: THREE.Math.radToDeg(rotation.x),
