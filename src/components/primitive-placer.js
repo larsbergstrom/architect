@@ -7,7 +7,7 @@ AFRAME.registerComponent('primitive-placer', {
 
     // Hook up to game state.
     var activePrimitive;
-    el.sceneEl.addEventListener('gamestateinitialized', function (evt) {
+    el.sceneEl.addEventListener('gamestateinitialize', function (evt) {
       activePrimitive = el.sceneEl.getAttribute('gamestate').activePrimitive;
     });
 
@@ -36,7 +36,7 @@ AFRAME.registerComponent('primitive-placer', {
 
       // Emit.
       newEntity.addEventListener('loaded', function () {
-        el.sceneEl.emit('primitiveplace', newEntity);
+        el.sceneEl.emit('primitiveplace', {el: newEntity});
         dingSound.play();
       });
 

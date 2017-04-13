@@ -1,5 +1,6 @@
 /* global AFRAME */
-module.exports = AFRAME.registerReducer('app', {
+
+AFRAME.registerReducer('app', {
   initialState: {
     activePrimitive: {},
     entityId: 0,
@@ -7,74 +8,66 @@ module.exports = AFRAME.registerReducer('app', {
     stagedPrimitives: []
   },
 
-  reducer: function (state, action) {
-    var newState = Object.assign({}, state || this.initialState);
-
-    switch (action.type) {
-      case 'primitiveplace': {
-        // Add primitive to staged primitives.
-        var entity = action;
-        entity.setAttribute('id', 'entity' + newState.entityId++);
-        entity.classList.add('stagedPrimitive');
-        newState.stagedPrimitives.push({
-          id: entity.getAttribute('id'),
-          geometry: entity.getDOMAttribute('geometry'),
-          material: entity.getDOMAttribute('material'),
-          position: entity.getAttribute('position'),
-          rotation: entity.getAttribute('rotation'),
-          scale: entity.getAttribute('scale')
-        });
-        break;
-      }
+  handlers: {
+    primitiveplace: function (newState, action) {
+      // Add primitive to staged primitives.
+      var el = action.el;
+      el.setAttribute('id', 'entity' + newState.entityId++);
+      el.classList.add('stagedPrimitive');
+      newState.stagedPrimitives.push({
+        id: el.getAttribute('id'),
+        geometry: el.getDOMAttribute('geometry'),
+        material: el.getDOMAttribute('material'),
+        position: el.getAttribute('position'),
+        rotation: el.getAttribute('rotation'),
+        scale: el.getAttribute('scale')
+      });
+      return newState;
+    },
 
       // Update active primitive geometry.
-      case 'paletteprimitiveselect': {
-        var data = action;
-        newState.activePrimitive.geometry = data.geometry;
-        newState.activePrimitive.scale = data.scale;
-        break;
-      }
+    paletteprimitiveselect: function (newState, data) {
+      newState.activePrimitive.geometry = data.geometry;
+      newState.activePrimitive.scale = data.scale;
+      return newState;
+    },
 
       // Update active primitive material.
-      case 'palettecolorselect': {
-        var data = action;
-        newState.activePrimitive.material = {color: data.color};
-        break;
-      }
+    palettecolorselect: function (newState, data) {
+      newState.activePrimitive.material = {color: data.color};
+      return newState
+    },
 
-      // Update active primitive material.
-      case 'createthingbuttonpress': {
-        // Move staged primitives to entities.
-        newState.entities.push(newState.stagedPrimitives.slice());
+    // Update active primitive material.
+    createthingbuttonpress: function (newState, data) {
+      // Move staged primitives to entities.
+      newState.entities.push(newState.stagedPrimitives.slice());
 
-        // Reset staged primitives.
-        newState.stagedPrimitives.length = 0;
-        break;
-      }
+      // Reset staged primitives.
+      newState.stagedPrimitives.length = 0;
+      return newState;
+    },
 
-      // Delete primitive.
-      case 'primitivedelete': {
-        var deletedEntityId = action.id;
-        var i;
-        var stagedPrimitive;
+    // Delete primitive.
+    primitivedelete: function (newState, data) {
+      var deletedEntityId = data.id;
+      var i;
+      var stagedPrimitive;
 
-        // Clone array for clean state.
-        newState.stagedPrimitives = newState.stagedPrimitives.slice();
+      // Clone array for clean state.
+      newState.stagedPrimitives = newState.stagedPrimitives.slice();
 
-        // Remove from stagedPrimitives array.
-        for (i = 0; i < newState.stagedPrimitives.length; i++) {
-          stagedPrimitive = newState.stagedPrimitives[i];
-          if (stagedPrimitive.id === deletedEntityId) {
-            newState.stagedPrimitives.splice(i, 1);
-            break;
-          }
+      // Remove from stagedPrimitives array.
+      for (i = 0; i < newState.stagedPrimitives.length; i++) {
+        stagedPrimitive = newState.stagedPrimitives[i];
+        if (stagedPrimitive.id === deletedEntityId) {
+          newState.stagedPrimitives.splice(i, 1);
+          break;
         }
-
-        // TODO: If not in stagedPrimitives, but in entities, then delete the group.
-        break;
       }
-    }
 
-    return newState;
+      // TODO: If not in stagedPrimitives, but in entities, then delete the group.
+      return newState
+    }
   }
 });

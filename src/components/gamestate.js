@@ -17,7 +17,7 @@ AFRAME.registerComponent('gamestate', {
   init: function () {
     var combinedReducers;
     var el = this.el;
-    var reducers = [];
+    var reducers = this.reducers = [];
     var self = this;
     var store;
 
@@ -26,27 +26,95 @@ AFRAME.registerComponent('gamestate', {
       reducers.push(new REDUCERS[reducerName].Reducer())
     });
 
-    // Compose reducers and create store.
+    // Compose reducers.
     combinedReducers = Redux.compose.apply(this,
       reducers.map(reducer => reducer.reducer)
     );
+
+    // Create store
     store = this.store = Redux.createStore(
       combinedReducers,
       window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
     );
 
-    // Sync initial state to component.
+    // Set component data accessible by `.getAttribute()`.
     this.data = store.getState();
 
-    // Notify.
-    el.emit('gamestateinitialized', {state: this.data});
+    this.initEventProxies();
+    this.initSubscribe();
+  },
 
-    // Set up subscriber to emit changes to A-Frame.
-    var previousState = Object.assign({}, this.data);
-    store.subscribe(() => {
+  /**
+   * Initial event emissions here so they don't emit before components have initialized.
+   */
+  play: function () {
+    var el = this.el;
+    el.emit('gamestateinitialize', {state: this.data});
+    el.emit('gamestatechange', {action: 'INIT', state: this.data});
+  },
+
+  /**
+   * Dispatch action to store.
+   */
+  dispatch: function (actionName, data) {
+    this.store.dispatch(Object.assign({
+      type: actionName,
+      toJSON: function () {
+        // toJSON just for redux-devtools-extension to serialize DOM elements.
+        var serializedData = {};
+        Object.keys(data).forEach(function (key) {
+          if (data[key].tagName) {
+            serializedData[key] = 'element#' + data[key].getAttribute('id')
+          } else {
+            serializedData[key] = data[key];
+          }
+        });
+        return {type: actionName};
+      }
+    }, data));
+  },
+
+  /**
+   * Proxy events to action dispatches so components can just bubble actions up as events.
+   */
+  initEventProxies: function () {
+    var el = this.el;
+    var reducers = this.reducers;
+    var self = this;
+
+    reducers.forEach(function (reducer) {
+      // Use reducer's declared handlers to know what events to listen to.
+      Object.keys(reducer.handlers).forEach(function (actionName) {
+        el.addEventListener(actionName, function (evt) {
+          var payload = {};
+          Object.keys(evt.detail).forEach(function (key) {
+            if (key === 'target') { return; }
+            payload[key] = evt.detail[key];
+          });
+          self.dispatch(actionName, payload);
+        });
+      });
+    });
+  },
+
+  /**
+   * Subscribe to store.
+   * When state changes, emit event containing relevant state change data so that
+   * components don't have to know about the store.
+   */
+  initSubscribe: function () {
+    var el = this.el;
+    var previousState;
+    var self = this;
+    var store = this.store;
+
+    // Keep track of previous state.
+    previousState = Object.assign({}, this.data);
+
+    store.subscribe(function () {
       var newState = store.getState();
-      this.data = newState;
-      el.emit('gamestatechanged', {
+      self.data = newState;
+      el.emit('gamestatechange', {
         action: newState.lastAction,
         diff: AFRAME.utils.diff(previousState, newState),
         state: newState
@@ -61,11 +129,8 @@ AFRAME.registerComponent('gamestate', {
  */
 var Reducer = function () { };
 Reducer.prototype = {
-  actions: {},
   initialState: {},
-  reducer: function (state, action) {
-    return state || this.initialState;
-  }
+  handlers: {}
 };
 
 /**
@@ -97,14 +162,17 @@ AFRAME.registerReducer = function (name, definition) {
   NewReducer.prototype.constructor = NewReducer;
 
   // Wrap reducer to bind `this` to prototype. Redux would bind `window`.
+  // Combine all handlers into one reducer function.
   NewReducer.prototype.reducer = function (state, action) {
-    return definition.reducer.call(NewReducer.prototype, state, action);
+    state = Object.assign({}, state || NewReducer.prototype.initialState);
+    if (!definition.handlers[action.type]) { return state; }
+    return definition.handlers[action.type].call(NewReducer.prototype, state, action);
   };
 
   REDUCERS[name] = {
     Reducer: NewReducer,
-    actions: NewReducer.prototype.actions,
     initialState: NewReducer.prototype.initialState,
+    handlers: NewReducer.prototype.handlers,
     reducer: NewReducer.prototype.reducer
   };
   return NewReducer;

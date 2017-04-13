@@ -6,7 +6,7 @@ AFRAME.registerComponent('palette-handler', {
 
      // Hook up to game state.
      var activePrimitive;
-     el.sceneEl.addEventListener('gamestateinitialized', function (evt) {
+     el.sceneEl.addEventListener('gamestateinitialize', function (evt) {
        activePrimitive = el.sceneEl.getAttribute('gamestate').activePrimitive;
      });
 

@@ -23,7 +23,7 @@ AFRAME.registerSystem('primitive-cloner', {
     handEl.object3D.add(cloneEl.object3D);
     sceneEl.appendChild(cloneEl);
 
-    sceneEl.emit('primitiveclone', cloneEl);
+    sceneEl.emit('primitiveclone', {el: cloneEl});
   },
 
   /**
