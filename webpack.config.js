@@ -1,5 +1,5 @@
+require('webpack');
 var UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-var webpack = require('webpack');
 
 var PLUGINS = [];
 if (process.env.NODE_ENV === 'production') {

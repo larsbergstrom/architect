@@ -40,7 +40,7 @@ AFRAME.registerReducer('app', {
      */
     palettecolorselect: function (newState, payload) {
       newState.paletteMaterial = {color: payload.color};
-      return newState
+      return newState;
     },
 
     /**
@@ -96,7 +96,7 @@ AFRAME.registerReducer('app', {
       }
 
       // TODO: If not in stagedPrimitives, but in entities, then delete the group.
-      return newState
+      return newState;
     },
 
     primitivemove: function (newState, payload) {

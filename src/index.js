@@ -9,6 +9,7 @@ require('./components/axis-helper');
 require('./components/create-thing-button');
 require('./components/gamestate');
 require('./components/html-exporter');
+require('./components/menu');
 require('./components/palette-handler');
 require('./components/primitive-cloner');
 require('./components/primitive-deleter');

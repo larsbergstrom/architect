@@ -1,3 +1,5 @@
+/* global AFRAME, THREE */
+
 /**
  * Grab.
  */
@@ -11,6 +13,7 @@ AFRAME.registerComponent('primitive-mover', {
     // Grab.
     handEl.addEventListener('mousedown', evt => {
       var activePrimitiveEl;
+      var activePrimitiveObject3D;
       var intersectedPrimitive = evt.detail.intersectedEl;
       var worldToLocal;
 
@@ -19,7 +22,7 @@ AFRAME.registerComponent('primitive-mover', {
 
       // Set active primitive.
       activePrimitiveEl = this.activePrimitiveEl = intersectedPrimitive;
-      activePrimitiveObject3D = activePrimitiveEl.object3D;
+      activePrimitiveObject3D = this.activePrimitiveObject3D = activePrimitiveEl.object3D;
 
       // World to local transform so position and rotation do not change when moved.
       handEl.object3D.updateMatrixWorld();
@@ -33,6 +36,7 @@ AFRAME.registerComponent('primitive-mover', {
     // Ungrab.
     handEl.addEventListener('mouseup', () => {
       var activePrimitiveEl = this.activePrimitiveEl;
+      var activePrimitiveObject3D = this.activePrimitiveObject3D;
       var position;
       var rotation;
 

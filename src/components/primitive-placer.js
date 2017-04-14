@@ -1,3 +1,5 @@
+/* global AFRAME, THREE */
+
 /**
  * Create primitive in scene from held primitive.
  */

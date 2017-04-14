@@ -1,3 +1,5 @@
+/* global AFRAME */
+
 AFRAME.registerComponent('primitive-deleter', {
   dependencies: ['controller-cursor'],
 
@@ -13,7 +15,6 @@ AFRAME.registerComponent('primitive-deleter', {
 
       if (!intersectedPrimitive.classList.contains('stagedPrimitive')) { return; }
 
-      console.log('Deleting primitive', cursorComponent.intersectedEl);
       intersectedPrimitive.parentNode.removeChild(intersectedPrimitive);
 
       deleteSound.volume = 0.1;

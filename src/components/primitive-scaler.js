@@ -1,3 +1,5 @@
+/* global AFRAME, THREE */
+
 var AXES = [
   {name: 'x', direction: new THREE.Vector3(1, 0, 0)},
   {name: 'y', direction: new THREE.Vector3(0, 1, 0)},
@@ -29,7 +31,6 @@ AFRAME.registerSystem('primitive-scaler', {
     var hands = this.hands;
     var handsDistance;
     var scale;
-    var stagedPrimitives;
 
     // Scale only if both hands are active.
     if (this.activeHands < 2 || !this.axis) { return; }
@@ -40,7 +41,7 @@ AFRAME.registerSystem('primitive-scaler', {
 
     // Update scale.
     scale = Object.assign({}, this.originalEntityScale);
-    scale[axis] = this.originalEntityScale[axis] + distanceChange * 10;
+    scale[axis] = (distanceChange * 10) + this.originalEntityScale[axis];
     activeEntity.setAttribute('scale', scale);
   },
 
@@ -48,6 +49,7 @@ AFRAME.registerSystem('primitive-scaler', {
    * Set hand active. Set up state if both hands are active.
    */
   setHandActive: function (handEl) {
+    var activeEntity;
     var hands = this.hands;  // Hand entities.
     var sceneEl = this.sceneEl;
 
@@ -132,7 +134,7 @@ AFRAME.registerComponent('primitive-scaler', {
   },
 
   remove: function () {
-    system.unregisterHand(el);
+    this.system.unregisterHand(this.el);
   }
 });
 

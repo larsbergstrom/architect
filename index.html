@@ -3,11 +3,12 @@
   <head>
     <meta charset="utf-8">
     <title>architect</title>
-    <script src="https://rawgit.com/aframevr/aframe/56c390f/dist/aframe-master.min.js"></script>
+    <script src="https://rawgit.com/aframevr/aframe/8c7c1ef/dist/aframe-master.min.js"></script>
+    <script src="https://rawgit.com/ngokevin/kframe/0f3e106ee6b9aa71c9e377a1172d4324356782d2/components/look-at/dist/aframe-look-at-component.min.js"></script>
     <script src="build/build.js"></script>
   </head>
   <body>
-    <a-scene avatar-replayer="src: recordings/cloning3.json; spectatorMode: true" html-exporter gamestate>
+    <a-scene avatar-replayer="src: recordings/menu.json" html-exporter gamestate>
       <a-assets>
         <img id="groundTexture" src="assets/img/floor.jpg">
         <img id="skyTexture" src="assets/img/sky.jpg">
@@ -21,14 +22,13 @@
 
       <!-- Hands. -->
       <a-entity id="leftHand"
-        hand-action-dispatcher
         hand-controls="left"
-        shadow="cast: true"
         controller-cursor
         raycaster="far: 0.2"
-        teleport-controls="type: parabolic; collisionEntities: #ground"
         primitive-cloner
-        primitive-scaler>
+        primitive-scaler
+        shadow="cast: true"
+        teleport-controls="type: parabolic; collisionEntities: #ground">
         <!-- Palette. -->
         <a-entity scale="3 3 3">
           <a-entity id="palette" geometry="primitive: box; depth: 0.008; height: 0.15; width: 0.15" material="color: #333; opacity: 0.85" position="0 0.015 0.015" rotation="-90 90 0">
@@ -69,6 +69,22 @@
         primitive-scaler>
         <!-- TODO: Specify palette size and actual size of primitives separately. -->
         <a-entity id="activePrimitive" position="0 0 -0.25" scale="5 5 5"></a-entity>
+      </a-entity>
+
+      <!-- Tools menu. -->
+      <a-mixin id="menuToolOption" geometry="primitive: sphere; radius: 0.05" material="color: #666"></a-mixin>
+      <a-mixin id="menuToolText" text="align: center" position="0 0.15 0" rotation="-90 0 0"></a-mixin>
+      <a-entity id="menu" look-at="#leftHand" menu visible="false">
+        <a-entity layout="type: circle; radius: 0.3" rotation="90 0 0">
+          <a-entity mixin="menuToolOption">
+            <a-entity mixin="menuToolText" text="value: Shapes"></a-entity>
+          </a-entity>
+          <a-entity mixin="menuToolOption">
+            <a-entity mixin="menuToolText" text="value: Materials"></a-entity>
+          </a-entity>
+          <a-entity mixin="menuToolOption"></a-entity>
+          <a-entity mixin="menuToolOption"></a-entity>
+        </a-entity>
       </a-entity>
 
       <!-- Environment. -->
