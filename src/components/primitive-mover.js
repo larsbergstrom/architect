@@ -53,6 +53,8 @@ AFRAME.registerComponent('primitive-mover', {
         z: THREE.Math.radToDeg(rotation.z)
       });
 
+      handEl.emit('primitivemove', {el: activePrimitiveEl});
+
       // Reset.
       this.activePrimitiveEl = null;
       this.activePrimitiveObject3D = null;

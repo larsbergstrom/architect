@@ -12,8 +12,8 @@ AFRAME.registerReducer('app', {
     /**
      * Add primitive to staged primitives.
      */
-    primitiveplace: function (newState, action) {
-      var el = action.el;
+    primitiveplace: function (newState, payload) {
+      var el = payload.el;
       el.setAttribute('id', 'entity' + newState.entityId++);
       el.classList.add('stagedPrimitive');
       newState.stagedPrimitives.push({
@@ -61,21 +61,16 @@ AFRAME.registerReducer('app', {
     primitiveclone: function (newState, payload) {
       var cloneData;
       var cloneEl = payload.el;
-      var i;
+      var primitive;
 
-      // FIXME: Breaks cloning
       cloneEl.setAttribute('id', 'entity' + newState.entityId++);
 
-      for (i = 0; i < newState.stagedPrimitives.length; i++) {
-        var primitive = newState.stagedPrimitives[i];
-        if (primitive.id !== payload.sourceEl.getAttribute('id')) { return; }
-        cloneData = Object.assign({}, primitive);
-        cloneData.id = cloneEl.getAttribute('id');
-        cloneData.position = cloneEl.getAttribute('position');
-        cloneData.rotation = cloneEl.getAttribute('rotation');
-        newState.stagedPrimitives.push(cloneData);
-        break;
-      }
+      primitive = findPrimitive(newState.stagedPrimitives, cloneEl);
+      cloneData = Object.assign({}, primitive);
+      cloneData.id = cloneEl.getAttribute('id');
+      cloneData.position = cloneEl.getAttribute('position');
+      cloneData.rotation = cloneEl.getAttribute('rotation');
+      newState.stagedPrimitives.push(cloneData);
 
       return newState;
     },
@@ -104,19 +99,26 @@ AFRAME.registerReducer('app', {
       return newState
     },
 
+    primitivemove: function (newState, payload) {
+      var el = payload.el;
+      var primitive = findPrimitive(newState.stagedPrimitives, el);
+      primitive.position = el.getAttribute('position');
+      primitive.rotation = el.getAttribute('rotation');
+      return newState;
+    },
+
     primitivescale: function (newState, payload) {
       var el = payload.el;
-      var i;
-      var stagedPrimitive;
-
-      for (i = 0; i < newState.stagedPrimitives.length; i++) {
-        stagedPrimitive = newState.stagedPrimitives[i];
-        if (stagedPrimitive.id === el.getAttribute('id')) {
-          stagedPrimitive.scale = el.getAttribute('scale');
-        }
-      }
-
+      var primitive = findPrimitive(newState.stagedPrimitives, el);
+      primitive.scale = el.getAttribute('scale');
       return newState;
     }
   }
 });
+
+/**
+ * Find primitive data corresponding to entity.
+ */
+function findPrimitive (primitives, el) {
+  return primitives.find(primitive => primitive.id === el.getAttribute('id'));
+}

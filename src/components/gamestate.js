@@ -1,6 +1,5 @@
 /* global AFRAME */
 var Redux = require('redux');
-
 var REDUCERS = {};
 
 AFRAME.registerComponent('gamestate', {
@@ -55,23 +54,26 @@ AFRAME.registerComponent('gamestate', {
 
   /**
    * Dispatch action to store.
+   *
+   * @param {string} actionName
+   * @param {object} payload
    */
-  dispatch: function (actionName, data) {
+  dispatch: function (actionName, payload) {
     this.store.dispatch(Object.assign({
       type: actionName,
       toJSON: function () {
         // toJSON just for redux-devtools-extension to serialize DOM elements.
-        var serializedData = {};
-        Object.keys(data).forEach(function (key) {
-          if (data[key].tagName) {
-            serializedData[key] = 'element#' + data[key].getAttribute('id')
+        var serializedPayload = {};
+        Object.keys(payload).forEach(function (key) {
+          if (payload[key].tagName) {
+            serializedPayload[key] = 'element#' + payload[key].getAttribute('id')
           } else {
-            serializedData[key] = data[key];
+            serializedPayload[key] = payload[key];
           }
         });
-        return {type: actionName};
+        return Object.assign({type: actionName}, serializedPayload);
       }
-    }, data));
+    }, payload));
   },
 
   /**
