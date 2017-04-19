@@ -5,6 +5,7 @@ AFRAME.registerReducer('app', {
     entities: [],
     paletteGeometry: {},
     paletteMaterial: {color: 'red'},
+    toolsMenuActive: false,
     stagedPrimitives: []
   },
 
@@ -111,6 +112,11 @@ AFRAME.registerReducer('app', {
       var el = payload.el;
       var primitive = findPrimitive(newState.stagedPrimitives, el);
       primitive.scale = el.getAttribute('scale');
+      return newState;
+    },
+
+    menucreateoptionselect: function (newState, payload) {
+      newState.toolsMenuActive = true;
       return newState;
     }
   }

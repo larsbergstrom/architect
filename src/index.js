@@ -8,6 +8,7 @@ require('aframe-teleport-controls');
 require('./components/axis-helper');
 require('./components/create-thing-button');
 require('./components/gamestate');
+require('./components/gamestate-bind');
 require('./components/html-exporter');
 require('./components/menu');
 require('./components/palette-handler');

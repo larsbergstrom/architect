@@ -8,7 +8,7 @@
     <script src="build/build.js"></script>
   </head>
   <body>
-    <a-scene avatar-replayer="src: recordings/menu.json" html-exporter gamestate>
+    <a-scene avatar-replayer="src: recordings/menu2.json" html-exporter gamestate>
       <a-assets>
         <img id="groundTexture" src="assets/img/floor.jpg">
         <img id="skyTexture" src="assets/img/sky.jpg">
@@ -24,7 +24,7 @@
       <a-entity id="leftHand"
         hand-controls="left"
         controller-cursor
-        raycaster="far: 0.2"
+        raycaster="far: .75"
         primitive-cloner
         primitive-scaler
         shadow="cast: true"
@@ -71,10 +71,31 @@
         <a-entity id="activePrimitive" position="0 0 -0.25" scale="5 5 5"></a-entity>
       </a-entity>
 
-      <!-- Tools menu. -->
-      <a-mixin id="menuToolOption" geometry="primitive: sphere; radius: 0.05" material="color: #EF2D5E"></a-mixin>
+      <!-- Main menu. -->
+      <a-mixin id="menuToolOption" geometry="primitive: sphere; radius: 0.05" material="color: #EF2D5E"
+               event-set__mouseenter="_event: mouseenter; material.opacity: 0.75"
+               event-set__mouseleave="_event: mouseleave; material.opacity: 1"></a-mixin>
       <a-mixin id="menuToolText" text="align: center" position="0 0.15 0"></a-mixin>
       <a-entity id="menu" look-at="#leftHand" menu visible="false"
+                gamestate-bind="menu.enabled: !toolsMenuActive"
+                layout="type: circle; radius: 0.3; plane: xy">
+        <a-entity mixin="menuToolOption" data-option="update">
+          <a-entity mixin="menuToolText" text="value: Update"></a-entity>
+        </a-entity>
+        <a-entity mixin="menuToolOption" data-option="create">
+          <a-entity mixin="menuToolText" text="value: Create"></a-entity>
+        </a-entity>
+        <a-entity mixin="menuToolOption" data-option="settings">
+          <a-entity mixin="menuToolText" text="value: Settings"></a-entity>
+        </a-entity>
+        <a-entity mixin="menuToolOption" data-options="environment">
+          <a-entity mixin="menuToolText" text="value: Environment"></a-entity>
+        </a-entity>
+      </a-entity>
+
+      <!-- Tools menu. -->
+      <a-entity id="toolMenu" look-at="#leftHand" menu="enabled: false" visible="false"
+                gamestate-bind="menu.enabled: toolsMenuActive"
                 layout="type: circle; radius: 0.3; plane: xy">
         <a-entity mixin="menuToolOption">
           <a-entity mixin="menuToolText" text="value: Materials"></a-entity>
@@ -86,7 +107,7 @@
           <a-entity mixin="menuToolText" text="value: Select"></a-entity>
         </a-entity>
         <a-entity mixin="menuToolOption">
-          <a-entity mixin="menuToolText" text="value: Group"></a-entity>
+          <a-entity mixin="menuToolText" text="value: Confirm"></a-entity>
         </a-entity>
       </a-entity>
 
