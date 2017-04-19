@@ -72,18 +72,21 @@
       </a-entity>
 
       <!-- Tools menu. -->
-      <a-mixin id="menuToolOption" geometry="primitive: sphere; radius: 0.05" material="color: #666"></a-mixin>
-      <a-mixin id="menuToolText" text="align: center" position="0 0.15 0" rotation="-90 0 0"></a-mixin>
-      <a-entity id="menu" look-at="#leftHand" menu visible="false">
-        <a-entity layout="type: circle; radius: 0.3" rotation="90 0 0">
-          <a-entity mixin="menuToolOption">
-            <a-entity mixin="menuToolText" text="value: Shapes"></a-entity>
-          </a-entity>
-          <a-entity mixin="menuToolOption">
-            <a-entity mixin="menuToolText" text="value: Materials"></a-entity>
-          </a-entity>
-          <a-entity mixin="menuToolOption"></a-entity>
-          <a-entity mixin="menuToolOption"></a-entity>
+      <a-mixin id="menuToolOption" geometry="primitive: sphere; radius: 0.05" material="color: #EF2D5E"></a-mixin>
+      <a-mixin id="menuToolText" text="align: center" position="0 0.15 0"></a-mixin>
+      <a-entity id="menu" look-at="#leftHand" menu visible="false"
+                layout="type: circle; radius: 0.3; plane: xy">
+        <a-entity mixin="menuToolOption">
+          <a-entity mixin="menuToolText" text="value: Materials"></a-entity>
+        </a-entity>
+        <a-entity mixin="menuToolOption">
+          <a-entity mixin="menuToolText" text="value: Shapes"></a-entity>
+        </a-entity>
+        <a-entity mixin="menuToolOption">
+          <a-entity mixin="menuToolText" text="value: Select"></a-entity>
+        </a-entity>
+        <a-entity mixin="menuToolOption">
+          <a-entity mixin="menuToolText" text="value: Group"></a-entity>
         </a-entity>
       </a-entity>
 
@@ -92,6 +95,7 @@
       <a-cylinder id="ground" src="#groundTexture" radius="32" height="0.1" shadow="receive: true"></a-cylinder>
       <a-entity light="type: ambient; color: #BBB"></a-entity>
       <a-entity light="type: directional; color: #FFF; intensity: 0.6; castShadow: true" position="-0.5 1 1"></a-entity>
+      <a-camera id="camera"></a-camera>
     </a-scene>
   </body>
 </html>
