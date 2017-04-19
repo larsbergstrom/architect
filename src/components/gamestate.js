@@ -16,23 +16,21 @@ AFRAME.registerComponent('gamestate', {
   init: function () {
     var combinedReducers;
     var el = this.el;
-    var reducers = this.reducers = [];
+    var Reducers = this.Reducers = {};
+    var reducers = this.reducers = {};
     var self = this;
     var store;
 
     // Instantiate registered reducers.
     Object.keys(REDUCERS).forEach(function (reducerName) {
-      reducers.push(new REDUCERS[reducerName].Reducer())
+      Reducers[reducerName] = new REDUCERS[reducerName].Reducer()
+      reducers[reducerName] = Reducers[reducerName].reducer;
     });
 
-    // Compose reducers.
-    combinedReducers = Redux.compose.apply(this,
-      reducers.map(reducer => reducer.reducer)
-    );
 
     // Create store
     store = this.store = Redux.createStore(
-      combinedReducers,
+      Redux.combineReducers(reducers),
       window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
     );
 
@@ -81,12 +79,12 @@ AFRAME.registerComponent('gamestate', {
    */
   initEventProxies: function () {
     var el = this.el;
-    var reducers = this.reducers;
+    var Reducers = this.Reducers;
     var self = this;
 
-    reducers.forEach(function (reducer) {
+    Object.keys(Reducers).forEach(function (reducerName) {
       // Use reducer's declared handlers to know what events to listen to.
-      Object.keys(reducer.handlers).forEach(function (actionName) {
+      Object.keys(Reducers[reducerName].handlers).forEach(function (actionName) {
         el.addEventListener(actionName, function (evt) {
           var payload = {};
           Object.keys(evt.detail).forEach(function (key) {

@@ -3,9 +3,6 @@ AFRAME.registerReducer('app', {
   initialState: {
     entityId: 0,
     entities: [],
-    paletteGeometry: {},
-    paletteMaterial: {color: 'red'},
-    toolsMenuActive: false,
     stagedPrimitives: []
   },
 
@@ -25,22 +22,6 @@ AFRAME.registerReducer('app', {
         rotation: el.getAttribute('rotation'),
         scale: el.getAttribute('scale')
       });
-      return newState;
-    },
-
-    /**
-     * Update active primitive geometry.
-     */
-    paletteprimitiveselect: function (newState, payload) {
-      newState.paletteGeometry = payload.geometry;
-      return newState;
-    },
-
-    /**
-     * Update active primitive material.
-     */
-    palettecolorselect: function (newState, payload) {
-      newState.paletteMaterial = {color: payload.color};
       return newState;
     },
 
@@ -112,11 +93,6 @@ AFRAME.registerReducer('app', {
       var el = payload.el;
       var primitive = findPrimitive(newState.stagedPrimitives, el);
       primitive.scale = el.getAttribute('scale');
-      return newState;
-    },
-
-    menucreateoptionselect: function (newState, payload) {
-      newState.toolsMenuActive = true;
       return newState;
     }
   }

@@ -19,8 +19,8 @@ AFRAME.registerComponent('primitive-placer', {
 
     // Read geometry and material from game state.
     el.sceneEl.addEventListener('gamestatechange', function (evt) {
-      geometry = evt.detail.state.paletteGeometry;
-      material = evt.detail.state.paletteMaterial;
+      geometry = evt.detail.state.menu.paletteGeometry;
+      material = evt.detail.state.menu.paletteMaterial;
     });
 
     el.addEventListener('primitivedragrelease', function (evt) {

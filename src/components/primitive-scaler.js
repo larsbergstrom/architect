@@ -64,7 +64,7 @@ AFRAME.registerSystem('primitive-scaler', {
     // Set up state.
     // Grab last-placed primitive for now.
     // TODO: Decouple from game state. Allow selecting primitive to scale.
-    stagedPrimitives = sceneEl.getAttribute('gamestate').stagedPrimitives;
+    stagedPrimitives = sceneEl.getAttribute('gamestate').app.stagedPrimitives;
     if (!stagedPrimitives.length) { return; }
     activeEntity = document.querySelector(
       '#' + stagedPrimitives[stagedPrimitives.length - 1].id);

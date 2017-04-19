@@ -8,7 +8,7 @@ AFRAME.registerComponent('palette-handler', {
 
      // Read selected material from state.
      el.sceneEl.addEventListener('gamestatechange', function (evt) {
-       material = evt.detail.state.paletteMaterial;
+       material = evt.detail.state.menu.paletteMaterial;
      });
 
     // Select primitive from palette with mousedown.

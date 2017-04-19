@@ -19,3 +19,4 @@ require('./components/primitive-placer');
 require('./components/primitive-scaler');
 
 require('./state/app');
+require('./state/menu');

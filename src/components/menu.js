@@ -14,6 +14,9 @@ AFRAME.registerComponent('menu', {
     handEl.addEventListener('surfacetouchstart', onHold);
     handEl.addEventListener('surfacetouchend', onRelease);
 
+    /**
+     * Open menu.
+     */
     function onHold () {
       var position;
       if (!self.data.enabled) { return; }
@@ -23,11 +26,18 @@ AFRAME.registerComponent('menu', {
       el.setAttribute('position', position);
     }
 
+    /**
+     * Select option, close menu.
+     */
     function onRelease () {
-      // Select tool.
+      var intersectedEl;
+
       if (!self.data.enabled) { return; }
+
       el.setAttribute('visible', false);
-      el.emit('menucreateoptionselect');
+
+      intersectedEl = handEl.components['controller-cursor'].intersectedEl;
+      el.emit('menuoptionselect', {optionName: intersectedEl.getAttribute('data-option')});
     }
   },
 });
