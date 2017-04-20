@@ -1,5 +1,3 @@
-/* global AFRAME, THREE */
-
 var AXES = [
   {name: 'x', direction: new THREE.Vector3(1, 0, 0)},
   {name: 'y', direction: new THREE.Vector3(0, 1, 0)},

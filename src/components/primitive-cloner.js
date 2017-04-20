@@ -1,5 +1,3 @@
-/* global AFRAME */
-
 AFRAME.registerSystem('primitive-cloner', {
   init: function () {
     this.activeEntity = null;

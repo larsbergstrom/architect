@@ -1,4 +1,3 @@
-/* global AFRAME */
 var debug = AFRAME.utils.debug;
 var warn = debug('state:menu:warn');
 

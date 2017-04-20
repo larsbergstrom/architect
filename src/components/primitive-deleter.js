@@ -1,5 +1,3 @@
-/* global AFRAME */
-
 AFRAME.registerComponent('primitive-deleter', {
   dependencies: ['controller-cursor'],
 

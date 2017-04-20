@@ -1,4 +1,3 @@
-/* global AFRAME */
 AFRAME.registerReducer('app', {
   initialState: {
     entityId: 0,

@@ -1,5 +1,3 @@
-/* global AFRAME */
-
 AFRAME.registerComponent('palette-handler', {
   init: function () {
     var el = this.el;

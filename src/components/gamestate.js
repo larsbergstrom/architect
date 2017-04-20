@@ -1,4 +1,3 @@
-/* global AFRAME */
 var Redux = require('redux');
 var REDUCERS = {};
 
