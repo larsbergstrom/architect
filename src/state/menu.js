@@ -48,6 +48,7 @@ AFRAME.registerReducer('menu', {
           newState.paletteActive = true;
           newState.materialToolActive = true;
           newState.shapeToolActive = false;
+          break;
         }
         default: {
           warn('Unknown or unimplemented menu option', payload.optionName);

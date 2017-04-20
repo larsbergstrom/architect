@@ -1,3 +1,5 @@
+/* global AFRAME */
+
 AFRAME.registerSystem('primitive-cloner', {
   init: function () {
     this.activeEntity = null;
@@ -8,14 +10,10 @@ AFRAME.registerSystem('primitive-cloner', {
 
   clone: function (sourceEl, handEl) {
     var cloneEl;
-    var position;
-    var rotation;
     var sceneEl = this.sceneEl;
 
     // Get world position and rotation.
     sourceEl.object3D.updateMatrixWorld();
-    position = sourceEl.object3D.getWorldPosition();
-    rotation = sourceEl.object3D.getWorldRotation();
 
     // TODO: Clone using game state.
     sourceEl.flushToDOM();
@@ -99,6 +97,6 @@ AFRAME.registerComponent('primitive-cloner', {
   },
 
   remove: function () {
-    system.unregisterHand(el);
+    this.system.unregisterHand(this.el);
   }
 });

@@ -14,19 +14,15 @@ AFRAME.registerComponent('gamestate', {
   },
 
   init: function () {
-    var combinedReducers;
-    var el = this.el;
     var Reducers = this.Reducers = {};
     var reducers = this.reducers = {};
-    var self = this;
     var store;
 
     // Instantiate registered reducers.
     Object.keys(REDUCERS).forEach(function (reducerName) {
-      Reducers[reducerName] = new REDUCERS[reducerName].Reducer()
+      Reducers[reducerName] = new REDUCERS[reducerName].Reducer();
       reducers[reducerName] = Reducers[reducerName].reducer;
     });
-
 
     // Create store
     store = this.store = Redux.createStore(
@@ -64,7 +60,7 @@ AFRAME.registerComponent('gamestate', {
         var serializedPayload = {};
         Object.keys(payload).forEach(function (key) {
           if (payload[key].tagName) {
-            serializedPayload[key] = 'element#' + payload[key].getAttribute('id')
+            serializedPayload[key] = 'element#' + payload[key].getAttribute('id');
           } else {
             serializedPayload[key] = payload[key];
           }

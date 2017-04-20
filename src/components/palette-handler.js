@@ -1,3 +1,5 @@
+/* global AFRAME */
+
 AFRAME.registerComponent('palette-handler', {
   init: function () {
     var el = this.el;
@@ -6,10 +8,10 @@ AFRAME.registerComponent('palette-handler', {
 
     this.hasSelectedPrimitive = false;
 
-     // Read selected material from state.
-     el.sceneEl.addEventListener('gamestatechange', function (evt) {
-       material = evt.detail.state.menu.paletteMaterial;
-     });
+    // Read selected material from state.
+    el.sceneEl.addEventListener('gamestatechange', function (evt) {
+      material = evt.detail.state.menu.paletteMaterial;
+    });
 
     // Select primitive from palette with mousedown.
     el.addEventListener('mousedown', evt => {

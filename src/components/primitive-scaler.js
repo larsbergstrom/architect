@@ -52,6 +52,7 @@ AFRAME.registerSystem('primitive-scaler', {
     var activeEntity;
     var hands = this.hands;  // Hand entities.
     var sceneEl = this.sceneEl;
+    var stagedPrimitives;
 
     // Don't count as scaling if intersecting entity, to not conflict with cloning gesture.
     if (handEl.components['controller-cursor'].intersectedEl) { return; }

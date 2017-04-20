@@ -21,7 +21,7 @@ module.exports = {
   plugins: PLUGINS,
   module: {
     rules: [
-      {test: /\.html/, loader: 'ejs-compiled-loader'},
+      {test: /\.html/, loader: 'ejs-compiled-loader'}
     ]
   }
 };

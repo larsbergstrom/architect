@@ -10,8 +10,8 @@ AFRAME.registerComponent('html-exporter', {
   },
 
   saveFile: function (html) {
-    var blob = new Blob([html], {type: 'text/plain'});
-    var url = URL.createObjectURL(blob);
+    var blob = new window.Blob([html], {type: 'text/plain'});
+    var url = window.URL.createObjectURL(blob);
     var aEl = document.createElement('a');
     aEl.href = url;
     aEl.setAttribute('download', 'aframescene.html');
@@ -41,7 +41,7 @@ function buildHTML (entityGroups) {
     '    <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>',
     '  </head>',
     '  <body>',
-    '    <a-scene>',
+    '    <a-scene>'
   ];
 
   console.log(entityGroups);

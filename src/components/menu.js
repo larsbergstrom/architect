@@ -10,7 +10,6 @@ AFRAME.registerComponent('menu', {
 
   init: function () {
     var el = this.el;
-    var data = this.data;
     var handEl = el.sceneEl.querySelector('#leftHand');
     var self = this;
 
@@ -52,5 +51,5 @@ AFRAME.registerComponent('menu', {
       // Option selected.
       el.emit('menuoptionselect', {optionName: intersectedEl.getAttribute('data-option')});
     }
-  },
+  }
 });
