@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>architect</title>
+    <script src="https://rawgit.com/aframevr/aframe/8c7c1ef/dist/aframe-master.min.js"></script>
+    <script src="https://rawgit.com/ngokevin/kframe/0f3e106ee6b9aa71c9e377a1172d4324356782d2/components/look-at/dist/aframe-look-at-component.min.js"></script>
+    <script src="build/build.js"></script>
+  </head>
+  <body>
+    <a-scene avatar-replayer="src: recordings/menu2.json" html-exporter gamestate>
+      <a-assets>
+        <img id="groundTexture" src="assets/img/floor.jpg">
+        <img id="skyTexture" src="assets/img/sky.jpg">
+        <!-- Primitive mixin in case you want to add debug components (e.g., axis-helper). -->
+        <a-mixin id="primitive"></a-mixin>
+        <audio id="deleteSound" src="assets/audio/delete.mp3"></audio>
+        <audio id="dingSound" src="assets/audio/ding.mp3"></audio>
+      </a-assets>
+
+      <!-- Hands. -->
+      <a-entity id="leftHand"
+        hand-controls="left"
+        controller-cursor
+        raycaster="far: .75"
+        primitive-cloner
+        primitive-scaler
+        shadow="cast: true"
+        teleport-controls="type: parabolic; collisionEntities: #ground">
+        <!-- Palette. -->
+        <a-entity id="palette"
+                  geometry="primitive: box; depth: 0.008; height: 0.15; width: 0.15"
+                  gamestate-bind="visible: menu.paletteActive" visible="false"
+                  material="color: #333; opacity: 0.85" position="0 0.03 0.015"
+                  rotation="-90 90 0">
+          <%- include src/templates/shapesTool.html -%>
+          <%- include src/templates/materialTool.html -%>
+        </a-entity>
+      </a-entity>
+
+      <a-entity id="rightHand"
+        hand-controls="right"
+        shadow="cast: true"
+        controller-cursor
+        raycaster="far: 0.2"
+        palette-handler
+        primitive-cloner
+        primitive-deleter
+        primitive-mover
+        primitive-placer
+        primitive-scaler>
+        <!-- TODO: Specify palette size and actual size of primitives separately. -->
+        <a-entity id="activePrimitive" position="0 0 -0.25" scale="5 5 5"></a-entity>
+      </a-entity>
+
+      <%- include src/templates/menu.html -%>
+      <%- include src/templates/toolsMenu.html -%>
+
+      <!-- Environment. -->
+      <a-sky id="bg" radius="30" src="#skyTexture" theta-length="90"></a-sky>
+      <a-cylinder id="ground" src="#groundTexture" radius="32" height="0.1" shadow="receive: true"></a-cylinder>
+      <a-entity light="type: ambient; color: #BBB"></a-entity>
+      <a-entity light="type: directional; color: #FFF; intensity: 0.6; castShadow: true" position="-0.5 1 1"></a-entity>
+
+      <a-camera id="camera"></a-camera>
+    </a-scene>
+  </body>
+</html>
