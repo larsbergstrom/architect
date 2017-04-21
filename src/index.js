@@ -1,7 +1,6 @@
 require('aframe-controller-cursor-component');
 require('aframe-event-set-component');
 require('aframe-layout-component');
-require('aframe-motion-capture-components');
 require('aframe-physics-system');
 require('aframe-teleport-controls');
 

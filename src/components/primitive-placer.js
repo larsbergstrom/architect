@@ -5,6 +5,7 @@ AFRAME.registerComponent('primitive-placer', {
   init: function () {
     var activePrimitiveEl;
     var el = this.el;
+    var entityContainer = el.sceneEl.querySelector('#entities');
     var dingSound;
     var geometry;
     var material;
@@ -51,7 +52,7 @@ AFRAME.registerComponent('primitive-placer', {
       });
 
       // Add primitive.
-      el.sceneEl.appendChild(newEntity);
+      entityContainer.appendChild(newEntity);
     });
   }
 });

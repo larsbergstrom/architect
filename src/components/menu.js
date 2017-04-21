@@ -15,8 +15,8 @@ AFRAME.registerComponent('menu', {
 
     handEl.addEventListener('menudown', onHold);
     handEl.addEventListener('menuup', onRelease);
-    handEl.addEventListener('surfacetouchstart', onHold);
-    handEl.addEventListener('surfacetouchend', onRelease);
+    handEl.addEventListener('ybuttondown', onHold);
+    handEl.addEventListener('ybuttonup', onRelease);
 
     /**
      * Open menu.
@@ -41,6 +41,8 @@ AFRAME.registerComponent('menu', {
       el.setAttribute('visible', false);
 
       intersectedEl = handEl.components['controller-cursor'].intersectedEl;
+
+      if (!intersectedEl) { return; }
 
       // If released and not select option, emit `unselect`.
       if (!intersectedEl.hasAttribute('data-option')) {

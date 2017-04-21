@@ -21,6 +21,7 @@ AFRAME.registerComponent('primitive-mover', {
       // Set active primitive.
       activePrimitiveEl = this.activePrimitiveEl = intersectedPrimitive;
       activePrimitiveObject3D = this.activePrimitiveObject3D = activePrimitiveEl.object3D;
+      activePrimitiveObject3D.updateMatrixWorld();
 
       // World to local transform so position and rotation do not change when moved.
       handEl.object3D.updateMatrixWorld();

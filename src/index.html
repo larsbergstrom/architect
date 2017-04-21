@@ -3,13 +3,17 @@
   <head>
     <meta charset="utf-8">
     <title>architect</title>
-    <script src="https://rawgit.com/aframevr/aframe/8c7c1ef/dist/aframe-master.min.js"></script>
+    <script src="https://rawgit.com/aframevr/aframe/e3b1e97/dist/aframe-master.min.js"></script>
+    <!-- <script src="http://yy.ngrok.io/dist/aframe-master.js"></script> -->
+    <!-- <script src="http://localhost:9000/dist/aframe-master.js"></script> -->
+    <!-- <script src="http://zz.ngrok.io/aframe-motion-capture-components.min.js"></script> -->
     <script src="https://rawgit.com/ngokevin/kframe/0f3e106ee6b9aa71c9e377a1172d4324356782d2/components/look-at/dist/aframe-look-at-component.min.js"></script>
+    <script src="https://rawgit.com/ngokevin/aframe-motion-capture/d4f3325/dist/aframe-motion-capture-components.min.js"></script>
     <script src="build/build.js"></script>
   </head>
   <body>
-    <a-scene avatar-replayer="src: recordings/menu2.json" html-exporter gamestate>
-      <a-assets>
+    <a-scene avatar-replayer="src: recordings/placing.json" html-exporter gamestate>
+      <a-assets timeout="10000">
         <img id="groundTexture" src="assets/img/floor.jpg">
         <img id="skyTexture" src="assets/img/sky.jpg">
         <!-- Primitive mixin in case you want to add debug components (e.g., axis-helper). -->
@@ -18,15 +22,17 @@
         <audio id="dingSound" src="assets/audio/ding.mp3"></audio>
       </a-assets>
 
+      <a-entity id="entities"></a-entity>
+
       <!-- Hands. -->
       <a-entity id="leftHand"
         hand-controls="left"
         controller-cursor
         raycaster="far: .75"
-        primitive-cloner
-        primitive-scaler
         shadow="cast: true"
-        teleport-controls="type: parabolic; collisionEntities: #ground">
+        teleport-controls="type: parabolic; collisionEntities: #ground"
+        primitive-cloner
+        primitive-scaler>
         <!-- Palette. -->
         <a-entity id="palette"
                   geometry="primitive: box; depth: 0.008; height: 0.15; width: 0.15"
@@ -45,7 +51,6 @@
         raycaster="far: 0.2"
         palette-handler
         primitive-cloner
-        primitive-deleter
         primitive-mover
         primitive-placer
         primitive-scaler>

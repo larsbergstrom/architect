@@ -3,6 +3,7 @@ AFRAME.registerSystem('primitive-cloner', {
     this.activeEntity = null;
     // [{handEl, intersectedEl}, {handEl, intersectedEl}].
     this.activeHands = [];
+    this.entityContainer = this.el.sceneEl.querySelector('#entities');
     this.hands = [];
   },
 
@@ -17,7 +18,7 @@ AFRAME.registerSystem('primitive-cloner', {
     sourceEl.flushToDOM();
     cloneEl = sourceEl.cloneNode();
     handEl.object3D.add(cloneEl.object3D);
-    sceneEl.appendChild(cloneEl);
+    this.entityContainer.appendChild(cloneEl);
 
     sceneEl.emit('primitiveclone', {el: cloneEl, sourceEl: sourceEl});
   },
