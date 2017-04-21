@@ -11,6 +11,10 @@ var transformedBasisVector = new THREE.Vector3();
  * System taking into account both hands.
  */
 AFRAME.registerSystem('primitive-scaler', {
+  schema: {
+    entity: {type: 'selector'}
+  },
+
   init: function () {
     this.activeEntity = null;
     this.activeHands = 0;

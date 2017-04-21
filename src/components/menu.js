@@ -11,6 +11,7 @@ AFRAME.registerComponent('menu', {
   init: function () {
     var el = this.el;
     var handEl = el.sceneEl.querySelector('#leftHand');
+    var menuPosition = new THREE.Vector3(0, 0, -0.5);
     var self = this;
 
     handEl.addEventListener('menudown', onHold);
@@ -25,9 +26,10 @@ AFRAME.registerComponent('menu', {
       var position;
       if (!self.data.enabled) { return; }
       el.setAttribute('visible', true);
-      position = handEl.object3D.getWorldPosition();
-      position.z -= 0.5;
-      el.setAttribute('position', position);
+      // Local point to world position to place the menu.
+      handEl.object3D.localToWorld(menuPosition);
+      el.setAttribute('position', menuPosition);
+      menuPosition.set(0, 0, -0.5);
     }
 
     /**
