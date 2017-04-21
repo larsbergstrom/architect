@@ -5,7 +5,7 @@ AFRAME.registerComponent('html-exporter', {
 
   exportHTML: function () {
     var sceneEl = this.el;
-    var html = buildHTML(sceneEl.getAttribute('gamestate').entities);
+    var html = buildHTML(sceneEl.getAttribute('gamestate').app.entities);
     this.saveFile(html);
   },
 

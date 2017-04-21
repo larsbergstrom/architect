@@ -12,7 +12,7 @@
     <script src="build/build.js"></script>
   </head>
   <body>
-    <a-scene avatar-replayer="src: recordings/placing.json" html-exporter gamestate>
+    <a-scene avatar-replayer="src: recordings/createGroup.json" html-exporter gamestate>
       <a-assets timeout="10000">
         <img id="groundTexture" src="assets/img/floor.jpg">
         <img id="skyTexture" src="assets/img/sky.jpg">
@@ -35,16 +35,17 @@
         primitive-scaler>
         <!-- Palette. -->
         <a-entity id="palette"
+                  gamestate-bind="visible: menu.paletteActive"
                   geometry="primitive: box; depth: 0.008; height: 0.15; width: 0.15"
-                  gamestate-bind="visible: menu.paletteActive" visible="false"
                   material="color: #333; opacity: 0.85" position="0 0.03 0.015"
-                  rotation="-90 90 0">
+                  rotation="-90 90 0" visible="false">
           <%- include src/templates/shapesTool.html -%>
           <%- include src/templates/materialTool.html -%>
         </a-entity>
       </a-entity>
 
       <a-entity id="rightHand"
+        gamestate-bind="primitive-placer.geometry: menu.paletteGeometry; primitive-placer.material: menu.paletteMaterial; primitive-scaler.entity: app.activePrimitiveId"
         hand-controls="right"
         shadow="cast: true"
         controller-cursor

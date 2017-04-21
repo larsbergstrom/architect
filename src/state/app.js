@@ -1,5 +1,14 @@
+/**
+ * General app state.
+ *
+ * @member {number} activePrimitiveId - Focused primitive to be target of global actions.
+ * @member {number} entityId - ID to give to next entity.
+ * @member {object} entities - Source of truth for all entities placed in the scene.
+ * @member {array} stagedPrimitives - Group of primitives for working entity.
+ */
 AFRAME.registerReducer('app', {
   initialState: {
+    activePrimitiveId: 0,
     entityId: 0,
     entities: [],
     stagedPrimitives: []
@@ -11,16 +20,18 @@ AFRAME.registerReducer('app', {
      */
     primitiveplace: function (newState, payload) {
       var el = payload.el;
-      el.setAttribute('id', 'entity' + newState.entityId++);
+      var id = 'entity' + newState.entityId++;;
+      el.setAttribute('id', id);
       el.classList.add('stagedPrimitive');
       newState.stagedPrimitives.push({
-        id: el.getAttribute('id'),
+        id: id,
         geometry: el.getDOMAttribute('geometry'),
         material: el.getDOMAttribute('material'),
         position: el.getAttribute('position'),
         rotation: el.getAttribute('rotation'),
         scale: el.getAttribute('scale')
       });
+      newState.activePrimitiveId = id;
       return newState;
     },
 
@@ -42,17 +53,19 @@ AFRAME.registerReducer('app', {
     primitiveclone: function (newState, payload) {
       var cloneData;
       var cloneEl = payload.el;
+      var id;
       var primitive;
 
-      cloneEl.setAttribute('id', 'entity' + newState.entityId++);
+      id = 'entity' + newState.entityId++;;
+      cloneEl.setAttribute('id', id);
 
       primitive = findPrimitive(newState.stagedPrimitives, cloneEl);
       cloneData = Object.assign({}, primitive);
-      cloneData.id = cloneEl.getAttribute('id');
+      cloneData.id = id;
       cloneData.position = cloneEl.getAttribute('position');
       cloneData.rotation = cloneEl.getAttribute('rotation');
       newState.stagedPrimitives.push(cloneData);
-
+      newState.activePrimitiveId = id;
       return newState;
     },
 
@@ -76,6 +89,10 @@ AFRAME.registerReducer('app', {
         }
       }
 
+      // Change active primitive.
+      newState.activePrimitiveId = newState.stagedPrimitives[
+        newState.stagedPrimitives.length - 1];
+
       // TODO: If not in stagedPrimitives, but in entities, then delete the group.
       return newState;
     },
@@ -85,6 +102,7 @@ AFRAME.registerReducer('app', {
       var primitive = findPrimitive(newState.stagedPrimitives, el);
       primitive.position = el.getAttribute('position');
       primitive.rotation = el.getAttribute('rotation');
+      newState.activePrimitiveId = primitive.id;
       return newState;
     },
 
