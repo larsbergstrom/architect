@@ -16,18 +16,21 @@ AFRAME.registerSystem('primitive-scaler', {
   },
 
   init: function () {
-    this.activeEntity = null;
     this.activeHands = 0;
     this.axis = '';
     this.handsVector = new THREE.Vector3();
     this.hands = [];
   },
 
+  update: function () {
+    console.log(this.data);
+  },
+
   /**
    * Update scale of entity if both hands active.
    */
   tick: function () {
-    var activeEntity = this.activeEntity;
+    var activeEntity = this.data.entity;
     var axis = this.axis;
     var distanceChange;
     var hands = this.hands;
@@ -36,6 +39,8 @@ AFRAME.registerSystem('primitive-scaler', {
 
     // Scale only if both hands are active.
     if (this.activeHands < 2 || !this.axis) { return; }
+
+    if (!activeEntity) { return; }
 
     // Calculate distance between both hands to determine how much to scale by.
     handsDistance = hands[0].object3D.position.distanceTo(hands[1].object3D.position);
@@ -51,7 +56,7 @@ AFRAME.registerSystem('primitive-scaler', {
    * Set hand active. Set up state if both hands are active.
    */
   setHandActive: function (handEl) {
-    var activeEntity;
+    var activeEntity = this.data.entity;
     var hands = this.hands;  // Hand entities.
     var sceneEl = this.sceneEl;
     var stagedPrimitives;
@@ -66,14 +71,8 @@ AFRAME.registerSystem('primitive-scaler', {
 
     // Set up state.
     // Grab last-placed primitive for now.
-    // TODO: Decouple from game state. Allow selecting primitive to scale.
     stagedPrimitives = sceneEl.getAttribute('gamestate').app.stagedPrimitives;
     if (!stagedPrimitives.length) { return; }
-    activeEntity = document.querySelector(
-      '#' + stagedPrimitives[stagedPrimitives.length - 1].id);
-
-    // Entity which we'll be scaling.
-    this.activeEntity = activeEntity;
 
     // Store original scale of entity and original distance between controllers.
     this.originalEntityScale = activeEntity.getAttribute('scale');
@@ -84,25 +83,25 @@ AFRAME.registerSystem('primitive-scaler', {
     handsVector.copy(hands[1].object3D.position).sub(hands[0].object3D.position);
 
     // Get closest axis to determine which direction to scale.
-    this.axis = getClosestAxis(handsVector.normalize(),
-                               this.activeEntity.object3D.quaternion);
+    this.axis = getClosestAxis(handsVector.normalize(), activeEntity.object3D.quaternion);
   },
 
   /**
    * Set hand inactive. Reset state if both hands are inactive.
    */
   setHandInactive: function (handEl) {
+    var activeEntity = this.data.entity;
+
     if (this.activeHands === 0) { return; }
 
     this.activeHands--;
 
     // Scaling finished.
-    if (this.activeEntity && this.axis) {
-      this.el.emit('primitivescale', {el: this.activeEntity});
+    if (activeEntity && this.axis) {
+      this.el.emit('primitivescale', {el: activeEntity});
     }
 
     // Reset state.
-    this.activeEntity = null;
     this.axis = '';
     this.originalEntityScale = null;
     this.originalHandsDistance = 0;

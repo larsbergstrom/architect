@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>architect</title>
-    <script src="https://rawgit.com/aframevr/aframe/e3b1e97/dist/aframe-master.min.js"></script>
+    <script src="https://rawgit.com/ngokevin/aframe/architect/dist/aframe-master.min.js"></script>
     <!-- <script src="http://yy.ngrok.io/dist/aframe-master.js"></script> -->
     <!-- <script src="http://localhost:9000/dist/aframe-master.js"></script> -->
     <!-- <script src="http://zz.ngrok.io/aframe-motion-capture-components.min.js"></script> -->
@@ -12,7 +12,8 @@
     <script src="build/build.js"></script>
   </head>
   <body>
-    <a-scene html-exporter gamestate>
+    <a-scene avatar-replayer="src: recordings/scaleClone.json" html-exporter gamestate
+             gamestate-bind="primitive-scaler.entity: app.activePrimitiveId">
       <a-assets timeout="10000">
         <img id="groundTexture" src="assets/img/floor.jpg">
         <img id="skyTexture" src="assets/img/sky.jpg">
@@ -45,7 +46,7 @@
       </a-entity>
 
       <a-entity id="rightHand"
-        gamestate-bind="primitive-placer.geometry: menu.paletteGeometry; primitive-placer.material: menu.paletteMaterial; primitive-scaler.entity: app.activePrimitiveId"
+        gamestate-bind="primitive-placer.geometry: menu.paletteGeometry; primitive-placer.material: menu.paletteMaterial"
         hand-controls="right"
         shadow="cast: true"
         controller-cursor

@@ -31,7 +31,7 @@ AFRAME.registerReducer('app', {
         rotation: el.getAttribute('rotation'),
         scale: el.getAttribute('scale')
       });
-      newState.activePrimitiveId = id;
+      newState.activePrimitiveId = '#' + id;
       return newState;
     },
 
@@ -65,7 +65,7 @@ AFRAME.registerReducer('app', {
       cloneData.position = cloneEl.getAttribute('position');
       cloneData.rotation = cloneEl.getAttribute('rotation');
       newState.stagedPrimitives.push(cloneData);
-      newState.activePrimitiveId = id;
+      newState.activePrimitiveId = '#' + id;
       return newState;
     },
 
@@ -90,8 +90,8 @@ AFRAME.registerReducer('app', {
       }
 
       // Change active primitive.
-      newState.activePrimitiveId = newState.stagedPrimitives[
-        newState.stagedPrimitives.length - 1];
+      newState.activePrimitiveId = '#' + newState.stagedPrimitives[
+        newState.stagedPrimitives.length - 1].id;
 
       // TODO: If not in stagedPrimitives, but in entities, then delete the group.
       return newState;
@@ -102,7 +102,7 @@ AFRAME.registerReducer('app', {
       var primitive = findPrimitive(newState.stagedPrimitives, el);
       primitive.position = el.getAttribute('position');
       primitive.rotation = el.getAttribute('rotation');
-      newState.activePrimitiveId = primitive.id;
+      newState.activePrimitiveId = '#' + primitive.id;
       return newState;
     },
 
