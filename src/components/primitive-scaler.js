@@ -22,10 +22,6 @@ AFRAME.registerSystem('primitive-scaler', {
     this.hands = [];
   },
 
-  update: function () {
-    console.log(this.data);
-  },
-
   /**
    * Update scale of entity if both hands active.
    */

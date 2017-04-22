@@ -1,13 +1,7 @@
 require('webpack');
-var HTMLWebpackPlugin = require('html-webpack-plugin');
 var UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
-var PLUGINS = [
-  new HTMLWebpackPlugin({
-    inject: false,
-    template: 'src/index.html'
-  })
-];
+var PLUGINS = [];
 if (process.env.NODE_ENV === 'production') {
   PLUGINS.push(new UglifyJSPlugin());
 }
@@ -21,7 +15,11 @@ module.exports = {
   plugins: PLUGINS,
   module: {
     rules: [
-      {test: /\.html/, loader: 'ejs-compiled-loader'}
+      {
+        test: /\.js/,
+        exclude: /(node_modules)/,
+        loader: 'babel-loader'
+      }
     ]
   }
 };
