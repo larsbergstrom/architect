@@ -25,7 +25,9 @@ import Menu from './view/Menu';
 import ShapesTool from './view/ShapesTool';
 import ToolsMenu from './view/ToolsMenu';
 
-import {Component, h, render} from 'preact';
+import {Component, h, options as preactOptions, render} from 'preact';
+
+preactOptions.syncComponentUpdates = true;
 
 class App extends Component {
   gamestate (scene) {
@@ -81,7 +83,7 @@ class App extends Component {
           {/* Palette. */}
           <a-entity id="palette"
                     gamestate-bind="visible: menu.paletteActive"
-                    geometry="primitive: box; depth: 0.008; height: 0.15; width: 0.15"
+                    geometry={{primitive: 'box', depth: 0.008, height: 0.15, width: 0.15}}
                     material="color: #333; opacity: 0.85" position="0 0.03 0.015"
                     rotation="-90 90 0" visible="false">
             <ShapesTool/>
