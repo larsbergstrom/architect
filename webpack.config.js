@@ -1,4 +1,5 @@
 require('webpack');
+var path = require('path');
 var UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 var PLUGINS = [];
@@ -26,6 +27,9 @@ module.exports = {
   resolve: {
     alias: {
       react: 'preact'
-    }
+    },
+    modules: [
+      path.join(__dirname, 'node_modules')
+    ]
   }
 };
