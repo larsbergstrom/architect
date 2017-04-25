@@ -7,6 +7,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 module.exports = {
+  devtool: '#inline-source-map',
   entry: './src/index.js',
   output: {
     path: __dirname,
@@ -21,5 +22,10 @@ module.exports = {
         loader: 'babel-loader'
       }
     ]
+  },
+  resolve: {
+    alias: {
+      react: 'preact'
+    }
   }
 };

@@ -55,7 +55,6 @@ AFRAME.registerSystem('primitive-scaler', {
     var activeEntity = this.data.entity;
     var hands = this.hands;  // Hand entities.
     var sceneEl = this.sceneEl;
-    var stagedPrimitives;
 
     // Don't count as scaling if intersecting entity, to not conflict with cloning gesture.
     if (handEl.components['controller-cursor'].intersectedEl) { return; }
@@ -65,10 +64,7 @@ AFRAME.registerSystem('primitive-scaler', {
 
     if (this.activeHands < 2) { return; }
 
-    // Set up state.
-    // Grab last-placed primitive for now.
-    stagedPrimitives = sceneEl.getAttribute('gamestate').app.stagedPrimitives;
-    if (!stagedPrimitives.length) { return; }
+    if (!activeEntity) { return; }
 
     // Store original scale of entity and original distance between controllers.
     this.originalEntityScale = activeEntity.getAttribute('scale');

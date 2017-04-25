@@ -1,15 +1,20 @@
+var objectPropType = require('./propertyTypes/object');
+
+/**
+ * Handle selecting primitive and color from palette.
+ */
 AFRAME.registerComponent('palette-handler', {
+  schema: {
+    material: objectPropType
+  },
+
   init: function () {
+    var activePrimitiveEl;
     var el = this.el;
-    var activePrimitiveEl = el.querySelector('#activePrimitive');
-    var material;
+    var self = this;
 
+    activePrimitiveEl = el.querySelector('#activePrimitive');
     this.hasSelectedPrimitive = false;
-
-    // Read selected material from state.
-    el.sceneEl.addEventListener('gamestatechange', function (evt) {
-      material = evt.detail.state.menu.paletteMaterial;
-    });
 
     // Select primitive from palette with mousedown.
     el.addEventListener('mousedown', evt => {
@@ -22,7 +27,7 @@ AFRAME.registerComponent('palette-handler', {
         var geometry = targetEl.getDOMAttribute('geometry');
         // Set.
         activePrimitiveEl.setAttribute('geometry', geometry);
-        activePrimitiveEl.setAttribute('material', material);
+        activePrimitiveEl.setAttribute('material', self.data.material);
         // Emit.
         el.emit('paletteprimitiveselect', {geometry: geometry});
         this.hasSelectedPrimitive = true;
