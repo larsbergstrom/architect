@@ -19,21 +19,26 @@ import {createStore, initEventProxies} from './state/index';
 import './state/app';
 import './state/menu';
 
+import {Assets} from './view/Assets';
 import {MaterialTool} from './view/MaterialTool';
 import {Menu} from './view/Menu';
 import {ShapesTool} from './view/ShapesTool';
 import {ToolsMenu} from './view/ToolsMenu';
 
 import {Component, h, options as preactOptions, render} from 'preact';
-import {Entity, Scene} from 'aframe-react';
+import {Entity} from 'aframe-react';
 
+// Disable batching.
 preactOptions.syncComponentUpdates = true;
 
+/**
+ * Connect Scene to Redux store.
+ */
 class App extends Component {
   constructor () {
     super();
 
-    // Create store.
+    // Create Redux store.
     this.store = createStore();
     this.store.subscribe(() => {
       this.forceUpdate();
@@ -42,44 +47,31 @@ class App extends Component {
     this.sceneCallback = this.sceneCallback.bind(this);
   }
 
+  /**
+   * Dispatch A-Frame events as actions on the Redux store.
+   */
   sceneCallback (sceneEl) {
     initEventProxies(this.store, sceneEl);
   }
 
   render () {
     return (
-      <AppScene gamestate={this.store.getState()} sceneCallback={this.sceneCallback}/>
+      <Scene gamestate={this.store.getState()} sceneCallback={this.sceneCallback}/>
     );
   }
 }
 
-function AppScene (props) {
+/**
+ * A-Frame Scene.
+ */
+function Scene (props) {
   const gamestate = props.gamestate;
 
   return (
     <a-scene avatar-replayer="src: recordings/scaleClone.json" html-exporter
              primitive-scaler={{entity: gamestate.app.activePrimitiveId}}
              ref={props.sceneCallback}>
-      <a-assets timeout="10000">
-        <img id="groundTexture" src="assets/img/floor.jpg"/>
-        <img id="skyTexture" src="assets/img/sky.jpg"/>
-        {/* Primitive mixin in case you want to add debug components (e.g., axis-helper). */}
-        <a-mixin id="primitive"></a-mixin>
-        <audio id="deleteSound" src="assets/audio/delete.mp3"></audio>
-        <audio id="dingSound" src="assets/audio/ding.mp3"></audio>
-        <a-mixin id="palettePrimitive" material="color: #888"
-                 event-set__mouseenter="_event: mouseenter; material.color: #555; material.opacity: 0.75"
-                 event-set__mouseleave="_event: mouseleave; material.color: #888; material.opacity: 1"></a-mixin>
-        <a-mixin id="color"
-                 geometry="primitive: box; depth: 0.001; height: 0.01; width: 0.01"
-                 event-set__mouseenter="_event: mouseenter; material.opacity: 0.75"
-                 event-set__mouseleave="_event: mouseleave; material.opacity: 1"></a-mixin>
-        <a-mixin id="menuToolOption" geometry="primitive: sphere; radius: 0.075"
-                 material="color: #EF2D5E"
-                 event-set__mouseenter="_event: mouseenter; material.opacity: 0.75"
-                 event-set__mouseleave="_event: mouseleave; material.opacity: 1"></a-mixin>
-        <a-mixin id="menuToolText" text="align: center" position="0 0.15 0"></a-mixin>
-      </a-assets>
+      <Assets/>
 
       <Entity id="entities"/>
 
@@ -130,4 +122,5 @@ function AppScene (props) {
   );
 }
 
+// Render.
 render(<App/>, document.body);

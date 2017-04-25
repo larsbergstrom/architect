@@ -1,15 +1,16 @@
+let ENTITY_ID = 0;
+let PRIMITIVE_ID = 0;
+
 /**
  * General app state.
  *
  * @member {number} activePrimitiveId - Focused primitive to be target of global actions.
- * @member {number} entityId - ID to give to next entity.
  * @member {object} entities - Source of truth for all entities placed in the scene.
- * @member {array} stagedPrimitives - Group of primitives for working entity.
+ * @member {array} stagedPrimitives - List of primitives comprising the working entity.
  */
 AFRAME.registerReducer('app', {
   initialState: {
-    activePrimitiveId: 0,
-    entityId: 0,
+    activePrimitiveId: null,
     entities: [],
     stagedPrimitives: []
   },
@@ -20,7 +21,7 @@ AFRAME.registerReducer('app', {
      */
     primitiveplace: function (newState, payload) {
       var el = payload.el;
-      var id = 'entity' + newState.entityId++;;
+      var id = `primitive${PRIMITIVE_ID++}`;
       el.setAttribute('id', id);
       el.classList.add('stagedPrimitive');
       newState.stagedPrimitives.push({
@@ -31,7 +32,7 @@ AFRAME.registerReducer('app', {
         rotation: el.getAttribute('rotation'),
         scale: el.getAttribute('scale')
       });
-      newState.activePrimitiveId = '#' + id;
+      newState.activePrimitiveId = `#${id}`;
       return newState;
     },
 
@@ -56,7 +57,7 @@ AFRAME.registerReducer('app', {
       var id;
       var primitive;
 
-      id = 'entity' + newState.entityId++;;
+      id = `primitive${PRIMITIVE_ID++}`;
       cloneEl.setAttribute('id', id);
 
       primitive = findPrimitive(newState.stagedPrimitives, cloneEl);
@@ -65,7 +66,7 @@ AFRAME.registerReducer('app', {
       cloneData.position = cloneEl.getAttribute('position');
       cloneData.rotation = cloneEl.getAttribute('rotation');
       newState.stagedPrimitives.push(cloneData);
-      newState.activePrimitiveId = '#' + id;
+      newState.activePrimitiveId = `#${id}`;
       return newState;
     },
 
@@ -90,8 +91,8 @@ AFRAME.registerReducer('app', {
       }
 
       // Change active primitive.
-      newState.activePrimitiveId = '#' + newState.stagedPrimitives[
-        newState.stagedPrimitives.length - 1].id;
+      let stagedPrimitives = newState.stagedPrimitives;
+      newState.activePrimitiveId = `#${stagedPrimitives[stagedPrimitives.length - 1].id}`;
 
       // TODO: If not in stagedPrimitives, but in entities, then delete the group.
       return newState;
@@ -102,7 +103,7 @@ AFRAME.registerReducer('app', {
       var primitive = findPrimitive(newState.stagedPrimitives, el);
       primitive.position = el.getAttribute('position');
       primitive.rotation = el.getAttribute('rotation');
-      newState.activePrimitiveId = '#' + primitive.id;
+      newState.activePrimitiveId = `#${primitive.id}`;
       return newState;
     },
 
