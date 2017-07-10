@@ -112,10 +112,7 @@ function Scene (props) {
       <ToolsMenu enabled={gamestate.menu.toolsMenuActive}/>
 
       {/* Environment. */}
-      <a-sky id="bg" radius="30" src="#skyTexture" theta-length="90"></a-sky>
-      <a-cylinder id="ground" src="#groundTexture" radius="32" height="0.1" shadow="receive: true"></a-cylinder>
-      <Entity light="type: ambient; color: #BBB"/>
-      <Entity light="type: directional; color: #FFF; intensity: 0.6; castShadow: true" position="-0.5 1 1"/>
+      <Entity environment={{preset: 'forest'}}/>
 
       <a-camera id="camera"></a-camera>
     </a-scene>
